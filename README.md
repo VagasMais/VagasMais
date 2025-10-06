@@ -12,7 +12,7 @@
 
 - Frontend: React + Vite + TypeScript
 - Backend: FastAPI (Python)
-- Banco de dados: (defina aqui, ex: MongoDB, SQLite, etc)
+- Banco de dados: MongoDB
 - Google Maps API
 
 # Observações
