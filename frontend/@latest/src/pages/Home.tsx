@@ -25,6 +25,7 @@ function Home() {
   const mapRef = useRef<HTMLDivElement>(null)
   const googleMapRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
+  const directionsRendererRef = useRef<any>(null);
 
   // Buscar vagas do backend
   useEffect(() => {
@@ -46,40 +47,7 @@ function Home() {
       setErro('')
     } catch (error) {
       console.error('Erro:', error)
-      // Se não conseguir buscar do backend, usar dados de exemplo
-      setVagas([
-        {
-          _id: '1',
-          nome: 'Shopping Center',
-          endereco: 'Av. Principal, 1000',
-          latitude: -22.9068,
-          longitude: -43.1729,
-          total_vagas: 10,
-          vagas_disponiveis: 3,
-          tipo: 'privada'
-        },
-        {
-          _id: '2',
-          nome: 'Hospital Municipal',
-          endereco: 'Rua da Saúde, 500',
-          latitude: -22.9108,
-          longitude: -43.1789,
-          total_vagas: 8,
-          vagas_disponiveis: 0,
-          tipo: 'publica'
-        },
-        {
-          _id: '3',
-          nome: 'Parque Central',
-          endereco: 'Av. dos Parques, 200',
-          latitude: -22.9028,
-          longitude: -43.1669,
-          total_vagas: 5,
-          vagas_disponiveis: 5,
-          tipo: 'publica'
-        }
-      ])
-      setErro('Usando dados de exemplo. Verifique o backend.')
+      setErro('Não foi possível carregar as vagas. Tente novamente mais tarde.')
     } finally {
       setCarregando(false)
     }
@@ -96,6 +64,7 @@ function Home() {
         },
         (error) => {
           console.error('Erro ao obter localização:', error)
+          setErro('Não foi possível obter sua localização. Tente novamente mais tarde.')
           // Usar localização padrão (Rio de Janeiro)
           setLocalizacaoUsuario({
             lat: -22.9068,
@@ -104,7 +73,7 @@ function Home() {
         }
       )
     } else {
-      // Usar localização padrão
+      setErro('Não foi possível obter sua localização. Tente novamente mais tarde.')
       setLocalizacaoUsuario({
         lat: -22.9068,
         lng: -43.1729
@@ -193,7 +162,6 @@ function Home() {
     } else {
       // Carregar Google Maps API
       const script = document.createElement('script')
-      // IMPORTANTE: Substitua YOUR_API_KEY pela sua chave real do Google Maps
       script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`
       script.async = true
       script.onload = initMap
@@ -207,14 +175,39 @@ function Home() {
 
   const tracarRota = (vaga: Vaga) => {
     if (!localizacaoUsuario) {
-      alert('Permita o acesso à sua localização para traçar rotas')
-      return
+      alert('Permita o acesso à sua localização para traçar rotas');
+      return;
     }
-
-    const origem = `${localizacaoUsuario.lat},${localizacaoUsuario.lng}`
-    const destino = `${vaga.latitude},${vaga.longitude}`
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`
-    window.open(url, '_blank')
+    const w = window as any;
+    if (!w.google || !googleMapRef.current) {
+      setErro('Google Maps não carregado');
+      return;
+    }
+    // Limpa rota anterior
+    if (directionsRendererRef.current) {
+      directionsRendererRef.current.setMap(null);
+      directionsRendererRef.current = null;
+    }
+    const directionsService = new w.google.maps.DirectionsService();
+    const directionsRenderer = new w.google.maps.DirectionsRenderer({ suppressMarkers: false });
+    directionsRenderer.setMap(googleMapRef.current);
+    directionsRendererRef.current = directionsRenderer;
+    directionsService.route(
+      {
+        origin: { lat: localizacaoUsuario.lat, lng: localizacaoUsuario.lng },
+        destination: { lat: vaga.latitude, lng: vaga.longitude },
+        travelMode: w.google.maps.TravelMode.DRIVING
+      },
+      (result: any, status: string) => {
+        console.log('DirectionsService status:', status, result);
+        console.log('Origem:', localizacaoUsuario, 'Destino:', vaga);
+        if (status === 'OK') {
+          directionsRenderer.setDirections(result);
+        } else {
+          setErro('Não foi possível traçar a rota.');
+        }
+      }
+    );
   }
 
   const vagasFiltradas = vagas.filter(vaga =>
