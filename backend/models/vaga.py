@@ -8,3 +8,5 @@ class Vaga(BaseModel):
     longitude: float
     endereco: str
     acessivel: bool = True
+    total_vagas: int
+    vagas_disponiveis: int
