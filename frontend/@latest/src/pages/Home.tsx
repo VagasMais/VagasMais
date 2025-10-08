@@ -12,8 +12,7 @@ interface Vaga {
   tipo: 'publica' | 'privada'
 }
 
-// URL do backend - ajuste conforme necessário
-const API_URL = 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_BACKEND_URL
 
 function Home() {
   const [vagas, setVagas] = useState<Vaga[]>([])
@@ -157,19 +156,20 @@ function Home() {
 
     const w = window as any
     
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     if (w.google) {
-      initMap()
+      initMap();
     } else {
       // Carregar Google Maps API
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`
-      script.async = true
-      script.onload = initMap
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.onload = initMap;
       script.onerror = () => {
-        console.error('Erro ao carregar Google Maps')
-        setErro('Erro ao carregar o mapa. Verifique a chave da API.')
-      }
-      document.head.appendChild(script)
+        console.error('Erro ao carregar Google Maps');
+        setErro('Erro ao carregar o mapa. Verifique a chave da API.');
+      };
+      document.head.appendChild(script);
     }
   }, [vagas, localizacaoUsuario])
 
