@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Loader } from 'lucide-react'
 import { type Vaga } from '../components/VagaCard'
 import MapContainer from '../components/MapContainer'
@@ -6,22 +6,19 @@ import SearchBar from '../components/SearchBar'
 import VagasList from '../components/VagasList'
 import { useVagas } from '../hooks/useVagas'
 import { useLocalizacao } from '../hooks/useLocalizacao'
-
-// Interface Vaga agora importada do componente
-
-const API_URL = import.meta.env.VITE_BACKEND_URL
+import { useGeocoding } from '../hooks/useGeocoding'
 
 function Home() {
   const { vagas, carregando, erro: erroVagas } = useVagas()
   const { localizacao: localizacaoUsuario, erro: erroLocalizacao } = useLocalizacao()
+  const { calcularDistancia } = useGeocoding()
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null)
   const [busca, setBusca] = useState('')
   const [erroMapa, setErroMapa] = useState('')
+  const [enderecoSelecionado, setEnderecoSelecionado] = useState<{ lat: number; lng: number } | null>(null)
   const googleMapRef = useRef<any>(null);
   const directionsRendererRef = useRef<any>(null);
-
-
-  // ...existing code...
+  const searchMarkerRef = useRef<any>(null);
 
   const tracarRota = (vaga: Vaga) => {
     if (!localizacaoUsuario) {
@@ -60,10 +57,68 @@ function Home() {
     );
   }
 
-  const vagasFiltradas = vagas.filter(vaga =>
-    vaga.nome.toLowerCase().includes(busca.toLowerCase()) ||
-    vaga.endereco.toLowerCase().includes(busca.toLowerCase())
-  )
+  const handleSelectAddress = (_address: string, coordinates: { lat: number; lng: number }) => {
+    setEnderecoSelecionado(coordinates)
+
+    // Mover o mapa para o endereço selecionado
+    if (googleMapRef.current) {
+      googleMapRef.current.panTo(coordinates)
+      googleMapRef.current.setZoom(15)
+
+      // Adicionar marcador no endereço buscado
+      const w = window as any
+      if (w.google) {
+        // Remover marcador anterior
+        if (searchMarkerRef.current) {
+          searchMarkerRef.current.setMap(null)
+        }
+
+        // Criar novo marcador
+        searchMarkerRef.current = new w.google.maps.Marker({
+          position: coordinates,
+          map: googleMapRef.current,
+          icon: {
+            path: w.google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: '#3b82f6',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 3
+          },
+          title: 'Local pesquisado'
+        })
+      }
+    }
+  }
+
+  const handleClearSearch = () => {
+    setBusca('')
+    setEnderecoSelecionado(null)
+
+    // Remover marcador de busca
+    if (searchMarkerRef.current) {
+      searchMarkerRef.current.setMap(null)
+      searchMarkerRef.current = null
+    }
+  }
+
+  // Filtrar vagas por texto OU por proximidade ao endereço selecionado
+  const vagasFiltradas = vagas.filter(vaga => {
+    // Filtro por texto (nome ou endereço)
+    const matchTexto = vaga.nome.toLowerCase().includes(busca.toLowerCase()) ||
+                       vaga.endereco.toLowerCase().includes(busca.toLowerCase())
+
+    // Se há um endereço selecionado, filtrar por proximidade (raio de 3km)
+    if (enderecoSelecionado) {
+      const distancia = calcularDistancia(
+        enderecoSelecionado,
+        { lat: vaga.latitude, lng: vaga.longitude }
+      )
+      return distancia <= 3 // 3km de raio
+    }
+
+    return matchTexto
+  })
 
   return (
     <div className="home">
@@ -71,8 +126,9 @@ function Home() {
       <SearchBar
         value={busca}
         onChange={setBusca}
-        onClear={() => setBusca('')}
-        placeholder="Buscar por local..."
+        onClear={handleClearSearch}
+        onSelectAddress={handleSelectAddress}
+        placeholder="Buscar por endereço..."
       />
 
       {/* Mapa modularizado */}
@@ -90,6 +146,7 @@ function Home() {
           setErro={setErroMapa}
           setVagaSelecionada={setVagaSelecionada}
           googleMapRef={googleMapRef}
+          vagasProximas={vagasFiltradas.map(v => v._id)}
         />
       )}
 

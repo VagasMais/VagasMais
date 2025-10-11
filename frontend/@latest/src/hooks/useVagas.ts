@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { type Vaga } from '../components/VagaCard'
 import { fetchVagas } from '../api/vagas'
 
-const API_URL = import.meta.env.VITE_BACKEND_URL
-
 export function useVagas() {
   const [vagas, setVagas] = useState<Vaga[]>([])
   const [carregando, setCarregando] = useState(true)
