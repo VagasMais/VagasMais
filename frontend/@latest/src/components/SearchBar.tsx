@@ -14,7 +14,6 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
   const autocompleteRef = useRef<any>(null)
   const [suggestions, setSuggestions] = useState<any[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [debugInfo, setDebugInfo] = useState<string>('')
 
   useEffect(() => {
     const initAutocomplete = () => {
@@ -22,22 +21,16 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
 
       // Validação mais robusta
       if (!w.google?.maps?.places?.AutocompleteService) {
-        console.log('Google Maps Places AutocompleteService ainda não disponível')
-        setDebugInfo('⏳ Aguardando Google Maps...')
         return false
       }
 
       // Configurar Google Places Autocomplete
       if (!autocompleteRef.current) {
         try {
-          console.log('Inicializando AutocompleteService')
           autocompleteRef.current = new w.google.maps.places.AutocompleteService()
-          setDebugInfo('✅ Autocomplete pronto')
-          console.log('AutocompleteService inicializado com sucesso')
           return true
         } catch (error) {
           console.error('Erro ao inicializar AutocompleteService:', error)
-          setDebugInfo('❌ Erro ao inicializar')
           return false
         }
       }
@@ -49,7 +42,7 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
 
     // Escutar evento de carregamento do Google Maps
     const handleGoogleMapsLoaded = () => {
-      console.log('Evento google-maps-loaded recebido, tentando inicializar...')
+  // Evento google-maps-loaded: tenta inicializar AutocompleteService
       // Tentar algumas vezes com delay
       let attempts = 0
       const tryInit = () => {
@@ -57,13 +50,13 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
           return
         }
         attempts++
-        console.log(`Tentativa ${attempts} de inicialização...`)
+  // tentativa de inicialização
         setTimeout(tryInit, 200)
       }
       tryInit()
     }
 
-    window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded)
+  window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded)
 
     // Cleanup ao desmontar
     return () => {
@@ -84,7 +77,6 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
     const w = window as any
     if (!w.google?.maps?.places?.AutocompleteService) {
       console.warn('Google Maps Places API não carregada ainda')
-      setDebugInfo('⚠️ API não carregada')
       return
     }
 
@@ -92,10 +84,8 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
       console.warn('AutocompleteService não inicializado, tentando criar...')
       try {
         autocompleteRef.current = new w.google.maps.places.AutocompleteService()
-        setDebugInfo('✅ Autocomplete pronto')
       } catch (error) {
         console.error('Erro ao criar AutocompleteService:', error)
-        setDebugInfo('❌ Erro de inicialização')
         return
       }
     }
@@ -108,31 +98,17 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
           componentRestrictions: { country: 'br' } // Restrito ao Brasil
         },
         (predictions: any, status: string) => {
-          console.log('Autocomplete status:', status)
-          if (predictions) {
-            console.log('Predictions recebidas:', predictions.length)
-          }
-
           if (status === w.google.maps.places.PlacesServiceStatus.OK && predictions) {
             setSuggestions(predictions)
             setShowSuggestions(true)
-            setDebugInfo(`✅ ${predictions.length} sugestões`)
-          } else if (status === 'ZERO_RESULTS') {
-            console.log('Nenhum resultado encontrado')
-            setSuggestions([])
-            setShowSuggestions(false)
-            setDebugInfo('ℹ️ Sem resultados')
           } else {
-            console.warn('Status de erro:', status)
             setSuggestions([])
             setShowSuggestions(false)
-            setDebugInfo(`⚠️ ${status}`)
           }
         }
       )
     } catch (error) {
       console.error('Erro ao buscar sugestões:', error)
-      setDebugInfo('❌ Erro na busca')
     }
   }
 
@@ -180,18 +156,7 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
             <X size={20} />
           </button>
         )}
-        {debugInfo && (
-          <div style={{
-            position: 'absolute',
-            right: value ? '45px' : '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '12px',
-            color: '#6b7280'
-          }}>
-            {debugInfo}
-          </div>
-        )}
+        {/* debug info removed for production */}
       </div>
 
       {/* Lista de sugestões */}

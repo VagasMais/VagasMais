@@ -7,11 +7,11 @@ import './index.css'
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registrado:', registration)
+      .then(() => {
+        console.info('SW registrado')
       })
       .catch(error => {
-        console.log('Erro ao registrar SW:', error)
+        console.error('Erro ao registrar SW:', error)
       })
   })
 }

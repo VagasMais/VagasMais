@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { loadGoogleMaps } from '../utils/loadGoogleMaps'
 
 
 interface MapContainerProps {
@@ -11,8 +12,6 @@ interface MapContainerProps {
   googleMapRef: React.RefObject<any>
   vagasProximas?: string[] // IDs das vagas próximas ao endereço buscado
 }
-
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, setVagaSelecionada, googleMapRef, vagasProximas = [] }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null)
@@ -91,31 +90,7 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
     if (w.google) {
       initMap()
     } else {
-      // Verificar se já existe script do Google Maps
-      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]')
-      if (existingScript) {
-        console.log('Script do Google Maps já existe, não recarregar')
-        return
-      }
-
-      // Carregar Google Maps API
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&v=weekly`
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        console.log('Google Maps API carregada com sucesso')
-        // Esperar um pouco para garantir que as bibliotecas estejam prontas
-        setTimeout(() => {
-          initMap()
-          // Disparar evento customizado para notificar outros componentes
-          window.dispatchEvent(new Event('google-maps-loaded'))
-        }, 100)
-      }
-      script.onerror = () => {
-        setErro('Erro ao carregar o mapa. Verifique a chave da API.')
-      }
-      document.head.appendChild(script)
+      loadGoogleMaps().then(() => initMap()).catch(() => setErro('Erro ao carregar o mapa. Verifique a chave da API.'))
     }
   }, [vagas, localizacaoUsuario, setErro, setVagaSelecionada, onSelectVaga, googleMapRef, vagasProximas])
 

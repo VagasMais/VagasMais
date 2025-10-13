@@ -7,6 +7,7 @@ import VagasList from '../components/VagasList'
 import { useVagas } from '../hooks/useVagas'
 import { useLocalizacao } from '../hooks/useLocalizacao'
 import { useGeocoding } from '../hooks/useGeocoding'
+import { abrirNavegacao } from '../utils/navigation'
 
 function Home() {
   const { vagas, carregando, erro: erroVagas } = useVagas()
@@ -46,63 +47,17 @@ function Home() {
         travelMode: w.google.maps.TravelMode.DRIVING
       },
       (result: any, status: string) => {
-        console.log('DirectionsService status:', status, result);
-        console.log('Origem:', localizacaoUsuario, 'Destino:', vaga);
         if (status === 'OK') {
           directionsRenderer.setDirections(result);
         } else {
+          console.error('DirectionsService falhou:', status, result)
           setErroMapa('Não foi possível traçar a rota.');
         }
       }
     );
   }
 
-  // Tenta abrir a navegação no app nativo (Android Intent / comgooglemaps / maps) e faz fallback para o Google Maps web
-  const abrirNavegacao = (origin: { lat: number; lng: number } | null, destLat: number, destLng: number) => {
-    const dest = `${destLat},${destLng}`
-    const originStr = origin ? `${origin.lat},${origin.lng}` : ''
-    const ua = navigator.userAgent || ''
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream
-    const isAndroid = /Android/.test(ua)
-
-    // URIs / esquemas
-    const googleIntent = `intent://google.navigation?q=${encodeURIComponent(dest)}#Intent;package=com.google.android.apps.maps;end`
-    const googleNavScheme = `google.navigation:q=${encodeURIComponent(dest)}`
-    const comGoogleMaps = originStr
-      ? `comgooglemaps://?saddr=${encodeURIComponent(originStr)}&daddr=${encodeURIComponent(dest)}&directionsmode=driving&navigate=yes`
-      : `comgooglemaps://?daddr=${encodeURIComponent(dest)}&directionsmode=driving&navigate=yes`
-    const appleMaps = originStr
-      ? `maps://?saddr=${encodeURIComponent(originStr)}&daddr=${encodeURIComponent(dest)}&dirflg=d`
-      : `maps://?daddr=${encodeURIComponent(dest)}&dirflg=d`
-    const googleWeb = originStr
-      ? `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originStr)}&destination=${encodeURIComponent(dest)}&travelmode=driving&dir_action=navigate`
-      : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving&dir_action=navigate`
-
-    try {
-      if (isAndroid) {
-        // Tenta Intent (provavelmente inicia navegação no app Google Maps)
-        window.location.href = googleIntent
-        // Se o intent não for tratado, tenta o esquema google.navigation e por fim web
-        setTimeout(() => { window.location.href = googleNavScheme }, 700)
-        setTimeout(() => { window.location.href = googleWeb }, 1400)
-        return
-      }
-
-      if (isIOS) {
-        // iOS: tenta Google Maps app (se instalado), depois Apple Maps, depois web
-        window.location.href = comGoogleMaps
-        setTimeout(() => { window.location.href = appleMaps }, 700)
-        setTimeout(() => { window.location.href = googleWeb }, 1400)
-        return
-      }
-
-      // Desktop / fallback universal: abre web em nova aba
-      window.open(googleWeb, '_blank')
-    } catch (err) {
-      // fallback final
-      window.open(googleWeb, '_blank')
-    }
-  }
+  // usar abrirNavegacao importado de utils/navigation
 
   const handleSelectAddress = (_address: string, coordinates: { lat: number; lng: number }) => {
     setEnderecoSelecionado(coordinates)
