@@ -4,7 +4,7 @@ import { loadGoogleMaps } from '../utils/loadGoogleMaps'
 
 interface MapContainerProps {
   vagas: any[]
-  localizacaoUsuario: { lat: number; lng: number } | null
+  userLocation: { lat: number; lng: number } | null
   onSelectVaga: (vaga: any) => void
   erro: string
   setErro: (erro: string) => void
@@ -13,7 +13,7 @@ interface MapContainerProps {
   vagasProximas?: string[] // IDs das vagas próximas ao endereço buscado
 }
 
-const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, setVagaSelecionada, googleMapRef, vagasProximas = [] }: MapContainerProps) => {
+const MapContainer = ({ vagas, userLocation, onSelectVaga, erro, setErro, setVagaSelecionada, googleMapRef, vagasProximas = [] }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null)
   const markersRef = useRef<any[]>([])
 
@@ -26,7 +26,7 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
         setErro('Google Maps não carregado')
         return
       }
-      const center = localizacaoUsuario || { lat: vagas[0].latitude, lng: vagas[0].longitude }
+  const center = userLocation || { lat: vagas[0].latitude, lng: vagas[0].longitude }
       const map = new w.google.maps.Map(mapRef.current, {
         center,
         zoom: 14,
@@ -43,9 +43,9 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
         googleMapRef.current = map
       }
       // Adicionar marcador da localização do usuário
-      if (localizacaoUsuario) {
+      if (userLocation) {
         new w.google.maps.Marker({
-          position: localizacaoUsuario,
+          position: userLocation,
           map,
           icon: {
             path: w.google.maps.SymbolPath.CIRCLE,
@@ -92,7 +92,7 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
     } else {
       loadGoogleMaps().then(() => initMap()).catch(() => setErro('Erro ao carregar o mapa. Verifique a chave da API.'))
     }
-  }, [vagas, localizacaoUsuario, setErro, setVagaSelecionada, onSelectVaga, googleMapRef, vagasProximas])
+  }, [vagas, userLocation, setErro, setVagaSelecionada, onSelectVaga, googleMapRef, vagasProximas])
 
   return (
     <div className="map-container">

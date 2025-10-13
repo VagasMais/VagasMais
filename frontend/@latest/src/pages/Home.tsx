@@ -7,11 +7,11 @@ import VagasList from '../components/VagasList'
 import { useVagas } from '../hooks/useVagas'
 import { useLocalizacao } from '../hooks/useLocalizacao'
 import { useGeocoding } from '../hooks/useGeocoding'
-import { abrirNavegacao } from '../utils/navigation'
+import { openNavigation } from '../utils/navigation'
 
 function Home() {
   const { vagas, carregando, erro: erroVagas } = useVagas()
-  const { localizacao: localizacaoUsuario, erro: erroLocalizacao } = useLocalizacao()
+  const { localizacao: userLocation, erro: erroLocalizacao } = useLocalizacao()
   const { calcularDistancia } = useGeocoding()
   const [vagaSelecionada, setVagaSelecionada] = useState<Vaga | null>(null)
   const [busca, setBusca] = useState('')
@@ -21,8 +21,8 @@ function Home() {
   const directionsRendererRef = useRef<any>(null);
   const searchMarkerRef = useRef<any>(null);
 
-  const tracarRota = (vaga: Vaga) => {
-    if (!localizacaoUsuario) {
+  const drawRoute = (vaga: Vaga) => {
+    if (!userLocation) {
       alert('Permita o acesso à sua localização para traçar rotas');
       return;
     }
@@ -42,7 +42,7 @@ function Home() {
     directionsRendererRef.current = directionsRenderer;
     directionsService.route(
       {
-        origin: { lat: localizacaoUsuario.lat, lng: localizacaoUsuario.lng },
+  origin: { lat: userLocation.lat, lng: userLocation.lng },
         destination: { lat: vaga.latitude, lng: vaga.longitude },
         travelMode: w.google.maps.TravelMode.DRIVING
       },
@@ -57,7 +57,7 @@ function Home() {
     );
   }
 
-  // usar abrirNavegacao importado de utils/navigation
+  // usar openNavigation importado de utils/navigation
 
   const handleSelectAddress = (_address: string, coordinates: { lat: number; lng: number }) => {
     setEnderecoSelecionado(coordinates)
@@ -142,7 +142,7 @@ function Home() {
       ) : (
         <MapContainer
           vagas={vagas}
-          localizacaoUsuario={localizacaoUsuario}
+          userLocation={userLocation}
           onSelectVaga={setVagaSelecionada}
           erro={erroMapa}
           setErro={setErroMapa}
@@ -161,9 +161,9 @@ function Home() {
         vagas={vagasFiltradas}
         vagaSelecionada={vagaSelecionada}
         onSelect={setVagaSelecionada}
-        onVerRota={localizacaoUsuario ? tracarRota : undefined}
-        onNavegar={localizacaoUsuario ? (vaga: Vaga) => abrirNavegacao(localizacaoUsuario, vaga.latitude, vaga.longitude) : undefined}
-        localizacaoUsuario={localizacaoUsuario}
+        onViewRoute={userLocation ? drawRoute : undefined}
+        onNavigate={userLocation ? (vaga: Vaga) => openNavigation(userLocation, vaga.latitude, vaga.longitude) : undefined}
+        userLocation={userLocation}
       />
       {/* Erro de localização */}
       {erroLocalizacao && (

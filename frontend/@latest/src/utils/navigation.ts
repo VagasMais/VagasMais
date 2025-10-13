@@ -1,4 +1,4 @@
-export function abrirNavegacao(origin: { lat: number; lng: number } | null, destLat: number, destLng: number) {
+export function openNavigation(origin: { lat: number; lng: number } | null, destLat: number, destLng: number) {
   const dest = `${destLat},${destLng}`
   const originStr = origin ? `${origin.lat},${origin.lng}` : ''
   const ua = navigator.userAgent || ''
@@ -19,21 +19,21 @@ export function abrirNavegacao(origin: { lat: number; lng: number } | null, dest
 
   try {
     if (isAndroid) {
-      window.location.href = googleIntent
+  window.location.href = googleIntent
       setTimeout(() => { window.location.href = googleNavScheme }, 700)
       setTimeout(() => { window.location.href = googleWeb }, 1400)
       return
     }
 
     if (isIOS) {
-      window.location.href = comGoogleMaps
+  window.location.href = comGoogleMaps
       setTimeout(() => { window.location.href = appleMaps }, 700)
       setTimeout(() => { window.location.href = googleWeb }, 1400)
       return
     }
 
     window.open(googleWeb, '_blank')
-  } catch (err) {
-    window.open(googleWeb, '_blank')
-  }
+    } catch (err) {
+      window.open(googleWeb, '_blank')
+    }
 }

@@ -15,12 +15,12 @@ interface VagaCardProps {
   vaga: Vaga
   selecionada: boolean
   onSelect: () => void
-  onVerRota?: () => void
-  onNavegar?: () => void
-  localizacaoUsuario?: { lat: number; lng: number } | null
+  onViewRoute?: () => void
+  onNavigate?: () => void
+  userLocation?: { lat: number; lng: number } | null
 }
 
-const VagaCard = ({ vaga, selecionada, onSelect, onVerRota, onNavegar, localizacaoUsuario }: VagaCardProps) => (
+const VagaCard = ({ vaga, selecionada, onSelect, onViewRoute, onNavigate, userLocation }: VagaCardProps) => (
   <div
     className={`vaga-card ${selecionada ? 'selected' : ''}`}
     onClick={onSelect}
@@ -38,13 +38,13 @@ const VagaCard = ({ vaga, selecionada, onSelect, onVerRota, onNavegar, localizac
         {vaga.vagas_disponiveis}/{vaga.total_vagas} vagas
       </span>
     </div>
-    {localizacaoUsuario && (onNavegar || onVerRota) && (
+    {userLocation && (onNavigate || onViewRoute) && (
       <button
         onClick={e => {
           e.stopPropagation()
           // Prioriza abrir navegação externa (turn-by-turn) se disponível
-          if (onNavegar) return onNavegar()
-          if (onVerRota) return onVerRota()
+          if (onNavigate) return onNavigate()
+          if (onViewRoute) return onViewRoute()
         }}
         className="rota-button"
       >
