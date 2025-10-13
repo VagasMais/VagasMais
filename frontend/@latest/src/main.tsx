@@ -4,7 +4,9 @@ import App from './App.tsx'
 import './index.css'
 
 // Registrar Service Worker para PWA
-if ('serviceWorker' in navigator) {
+// Apenas registrar em produção. No modo dev (Vite) o arquivo sw.js normalmente não
+// existe (é gerado no build) e isso causa errors como "Script .../sw.js load failed".
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then(() => {
