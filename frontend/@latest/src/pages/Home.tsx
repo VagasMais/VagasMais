@@ -17,17 +17,17 @@ function Home() {
   const [busca, setBusca] = useState('')
   const [erroMapa, setErroMapa] = useState('')
   const [enderecoSelecionado, setEnderecoSelecionado] = useState<{ lat: number; lng: number } | null>(null)
-  const googleMapRef = useRef<any>(null);
-  const directionsRendererRef = useRef<any>(null);
-  const searchMarkerRef = useRef<any>(null);
+  const googleMapRef = useRef<google.maps.Map | null>(null);
+  const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
+  const searchMarkerRef = useRef<google.maps.Marker | null>(null);
 
   const drawRoute = (vaga: Vaga) => {
     if (!userLocation) {
       alert('Permita o acesso à sua localização para traçar rotas');
       return;
     }
-    const w = window as any;
-    if (!w.google || !googleMapRef.current) {
+    // Ensure google maps is available
+    if (typeof google === 'undefined' || !googleMapRef.current) {
       setErroMapa('Google Maps não carregado');
       return;
     }
@@ -36,18 +36,18 @@ function Home() {
       directionsRendererRef.current.setMap(null);
       directionsRendererRef.current = null;
     }
-    const directionsService = new w.google.maps.DirectionsService();
-    const directionsRenderer = new w.google.maps.DirectionsRenderer({ suppressMarkers: false });
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: false });
     directionsRenderer.setMap(googleMapRef.current);
     directionsRendererRef.current = directionsRenderer;
     directionsService.route(
       {
   origin: { lat: userLocation.lat, lng: userLocation.lng },
         destination: { lat: vaga.latitude, lng: vaga.longitude },
-        travelMode: w.google.maps.TravelMode.DRIVING
+        travelMode: google.maps.TravelMode.DRIVING
       },
-      (result: any, status: string) => {
-        if (status === 'OK') {
+      (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
+        if (status === 'OK' && result) {
           directionsRenderer.setDirections(result);
         } else {
           console.error('DirectionsService falhou:', status, result)
@@ -68,19 +68,20 @@ function Home() {
       googleMapRef.current.setZoom(15)
 
       // Adicionar marcador no endereço buscado
-      const w = window as any
-      if (w.google) {
+      if (typeof google === 'undefined') return
+
+      if (google) {
         // Remover marcador anterior
         if (searchMarkerRef.current) {
           searchMarkerRef.current.setMap(null)
         }
 
         // Criar novo marcador
-        searchMarkerRef.current = new w.google.maps.Marker({
+        searchMarkerRef.current = new google.maps.Marker({
           position: coordinates,
           map: googleMapRef.current,
           icon: {
-            path: w.google.maps.SymbolPath.CIRCLE,
+            path: google.maps.SymbolPath.CIRCLE,
             scale: 12,
             fillColor: '#3b82f6',
             fillOpacity: 1,

@@ -6,7 +6,6 @@ export function useLocalizacao() {
 
   useEffect(() => {
     obterLocalizacao()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const obterLocalizacao = () => {

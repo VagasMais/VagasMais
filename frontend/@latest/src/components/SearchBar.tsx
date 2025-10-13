@@ -11,23 +11,24 @@ interface SearchBarProps {
 
 const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: SearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const autocompleteRef = useRef<any>(null)
-  const [suggestions, setSuggestions] = useState<any[]>([])
+  const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null)
+  const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  // Create a local alias for the google namespace type using globalThis to avoid self-reference
+  type GoogleNamespace = typeof globalThis.google
+  const google = typeof window !== 'undefined' ? (globalThis as unknown as { google?: GoogleNamespace }).google : undefined
 
   useEffect(() => {
-    const initAutocomplete = () => {
-      const w = window as any
-
+      const initAutocomplete = () => {
       // Validação mais robusta
-      if (!w.google?.maps?.places?.AutocompleteService) {
+      if (typeof google === 'undefined' || !google?.maps?.places?.AutocompleteService) {
         return false
       }
 
       // Configurar Google Places Autocomplete
       if (!autocompleteRef.current) {
         try {
-          autocompleteRef.current = new w.google.maps.places.AutocompleteService()
+          autocompleteRef.current = new google.maps.places.AutocompleteService()
           return true
         } catch (error) {
           console.error('Erro ao inicializar AutocompleteService:', error)
@@ -63,7 +64,7 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
       autocompleteRef.current = null
       window.removeEventListener('google-maps-loaded', handleGoogleMapsLoaded)
     }
-  }, [])
+  }, [google])
 
   const handleInputChange = async (texto: string) => {
     onChange(texto)
@@ -74,16 +75,15 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
       return
     }
 
-    const w = window as any
-    if (!w.google?.maps?.places?.AutocompleteService) {
+    if (typeof google === 'undefined' || !google?.maps?.places?.AutocompleteService) {
       console.warn('Google Maps Places API não carregada ainda')
       return
     }
 
-    if (!autocompleteRef.current) {
+      if (!autocompleteRef.current) {
       console.warn('AutocompleteService não inicializado, tentando criar...')
       try {
-        autocompleteRef.current = new w.google.maps.places.AutocompleteService()
+  autocompleteRef.current = new google.maps.places.AutocompleteService()
       } catch (error) {
         console.error('Erro ao criar AutocompleteService:', error)
         return
@@ -91,46 +91,48 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
     }
 
     // Buscar sugestões
-    try {
-      autocompleteRef.current.getPlacePredictions(
-        {
-          input: texto,
-          componentRestrictions: { country: 'br' } // Restrito ao Brasil
-        },
-        (predictions: any, status: string) => {
-          if (status === w.google.maps.places.PlacesServiceStatus.OK && predictions) {
-            setSuggestions(predictions)
-            setShowSuggestions(true)
-          } else {
-            setSuggestions([])
-            setShowSuggestions(false)
+      try {
+        autocompleteRef.current!.getPlacePredictions(
+          {
+            input: texto,
+            componentRestrictions: { country: 'br' } // Restrito ao Brasil
+          },
+          (predictions, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+              setSuggestions(predictions)
+              setShowSuggestions(true)
+            } else {
+              setSuggestions([])
+              setShowSuggestions(false)
+            }
           }
-        }
-      )
-    } catch (error) {
-      console.error('Erro ao buscar sugestões:', error)
-    }
+        )
+      } catch (err) {
+        console.error('Erro ao buscar sugestões:', err)
+      }
   }
 
-  const handleSelectSuggestion = (suggestion: any) => {
+  const handleSelectSuggestion = (suggestion: google.maps.places.AutocompletePrediction) => {
     onChange(suggestion.description)
     setShowSuggestions(false)
     setSuggestions([])
 
     // Geocodificar o endereço selecionado
-    const w = window as any
-    if (!w.google) return
+  if (typeof google === 'undefined') return
 
-    const geocoder = new w.google.maps.Geocoder()
-    geocoder.geocode({ placeId: suggestion.place_id }, (results: any, status: string) => {
-      if (status === 'OK' && results[0]) {
-        const location = results[0].geometry.location
-        onSelectAddress?.(suggestion.description, {
-          lat: location.lat(),
-          lng: location.lng()
-        })
+  const geocoder = new google.maps.Geocoder()
+    geocoder.geocode(
+      { placeId: suggestion.place_id },
+      (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) => {
+        if (status === 'OK' && results && results[0]) {
+          const location = results[0].geometry.location
+          onSelectAddress?.(suggestion.description, {
+            lat: location.lat(),
+            lng: location.lng(),
+          })
+        }
       }
-    })
+    )
   }
 
   const handleClear = () => {

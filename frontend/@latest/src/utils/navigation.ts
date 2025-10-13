@@ -2,7 +2,8 @@ export function openNavigation(origin: { lat: number; lng: number } | null, dest
   const dest = `${destLat},${destLng}`
   const originStr = origin ? `${origin.lat},${origin.lng}` : ''
   const ua = navigator.userAgent || ''
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream
+  // Feature-detect MSStream instead of using an unsafe any cast
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !('MSStream' in window)
   const isAndroid = /Android/.test(ua)
 
   const googleIntent = `intent://google.navigation?q=${encodeURIComponent(dest)}#Intent;package=com.google.android.apps.maps;end`
@@ -33,7 +34,9 @@ export function openNavigation(origin: { lat: number; lng: number } | null, dest
     }
 
     window.open(googleWeb, '_blank')
-    } catch (err) {
+    } catch (err: unknown) {
+      // Log the error and fallback to web navigation
+      console.error('openNavigation error:', err)
       window.open(googleWeb, '_blank')
     }
 }

@@ -20,4 +20,18 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  // Prevent legacy .jsx files from being added going forward
+  {
+    files: ['**/*.jsx'],
+    rules: {
+      // If any .jsx file exists, fail lint with a clear message.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Program',
+          message: 'Usage of .jsx files is not allowed. Convert to .tsx and use TypeScript types.',
+        },
+      ],
+    },
+  },
 ])

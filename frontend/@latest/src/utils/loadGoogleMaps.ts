@@ -1,15 +1,18 @@
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
+type GoogleWindow = Window & { google?: { maps?: unknown } }
+
 export function loadGoogleMaps(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const w = window as any
-    if (w.google && w.google.maps) {
+    // Use feature detection instead of unsafe casts
+    const gw = window as unknown as GoogleWindow
+    if (typeof gw.google !== 'undefined' && gw.google?.maps) {
       resolve()
       return
     }
 
     // Evitar múltiplos carregamentos
-    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]')
+  const existingScript = document.querySelector('script[src*="maps.googleapis.com"]') as HTMLScriptElement | null
     if (existingScript) {
       // Pode já estar carregando; escutar evento
       const onLoaded = () => {
