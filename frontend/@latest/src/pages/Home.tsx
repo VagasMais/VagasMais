@@ -146,7 +146,11 @@ function Home() {
           setErro={setErroMapa}
           setVagaSelecionada={setVagaSelecionada}
           googleMapRef={googleMapRef}
-          vagasProximas={vagasFiltradas.map(v => v._id)}
+          // se houver um endereco selecionado, mostrar vagas próximas desse endereco
+          vagasProximas={enderecoSelecionado ? vagas.filter(v => {
+            const distancia = calcularDistancia(enderecoSelecionado, { lat: v.latitude, lng: v.longitude })
+            return distancia <= 0.5
+          }).map(v => v._id) : vagasFiltradas.map(v => v._id)}
         />
       )}
 
@@ -156,6 +160,12 @@ function Home() {
         vagaSelecionada={vagaSelecionada}
         onSelect={setVagaSelecionada}
         onVerRota={localizacaoUsuario ? tracarRota : undefined}
+        onNavegar={localizacaoUsuario ? (vaga: Vaga) => {
+          const origin = `${localizacaoUsuario.lat},${localizacaoUsuario.lng}`
+          const dest = `${vaga.latitude},${vaga.longitude}`
+          const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&travelmode=driving`
+          window.open(url, '_blank')
+        } : undefined}
         localizacaoUsuario={localizacaoUsuario}
       />
       {/* Erro de localização */}
