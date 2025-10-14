@@ -21,7 +21,8 @@ export async function fetchParkingSpots(): Promise<ParkingSpot[]> {
     longitude: number
     total_vagas: number
     vagas_disponiveis: number
-    tipo: 'publica' | 'privada'
+    acessivel: boolean
+
   }) => ({
     _id: spot._id,
     name: spot.nome,
@@ -30,6 +31,6 @@ export async function fetchParkingSpots(): Promise<ParkingSpot[]> {
     longitude: spot.longitude,
     totalSpots: spot.total_vagas,
     availableSpots: spot.vagas_disponiveis,
-    type: spot.tipo === 'publica' ? 'public' : 'private'
+    accessible: spot.acessivel,
   }))
 }

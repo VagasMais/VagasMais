@@ -56,6 +56,11 @@ const ParkingSpotCard = ({
         <span className={`vaga-status ${isAvailable ? 'disponivel' : 'ocupado'}`}>
           {isAvailable ? 'Disponível' : 'Ocupado'}
         </span>
+
+        <span className={`vaga-acessivel ${spot.acessible ? 'acessivel' : 'nao-acessivel'}`}>
+          {spot.acessible ? 'PÚBLICA' : 'PRIVADA'}
+        </span>
+
         <span className="vaga-count">
           {spot.availableSpots}/{spot.totalSpots} vagas
         </span>

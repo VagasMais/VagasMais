@@ -292,6 +292,24 @@
   color: #991b1b;
 }
 
+.vaga-acessivel {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.vaga-acessivel.acessivel {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.vaga-acessivel.nao-acessivel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
 .vaga-count {
   font-size: 0.875rem;
   color: var(--text-secondary);

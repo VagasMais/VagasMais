@@ -11,7 +11,7 @@ export interface ParkingSpot {
   longitude: number
   totalSpots: number
   availableSpots: number
-  type: 'public' | 'private'
+  acessible: boolean
 }
 
 export interface Coordinates {
