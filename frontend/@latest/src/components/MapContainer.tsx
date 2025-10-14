@@ -1,34 +1,36 @@
 import { useEffect, useRef } from 'react'
+import { loadGoogleMaps } from '../utils/loadGoogleMaps'
+import type { Vaga } from './VagaCard'
 
 
 interface MapContainerProps {
-  vagas: any[]
-  localizacaoUsuario: { lat: number; lng: number } | null
-  onSelectVaga: (vaga: any) => void
+  vagas: Vaga[]
+  userLocation: { lat: number; lng: number } | null
+  onSelectVaga: (vaga: Vaga) => void
   erro: string
   setErro: (erro: string) => void
-  setVagaSelecionada: (vaga: any) => void
-  googleMapRef: React.RefObject<any>
+  setVagaSelecionada: (vaga: Vaga) => void
+  googleMapRef: React.RefObject<google.maps.Map | null>
   vagasProximas?: string[] // IDs das vagas próximas ao endereço buscado
 }
 
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-
-const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, setVagaSelecionada, googleMapRef, vagasProximas = [] }: MapContainerProps) => {
+const MapContainer = ({ vagas, userLocation, onSelectVaga, erro, setErro, setVagaSelecionada, googleMapRef, vagasProximas = [] }: MapContainerProps) => {
   const mapRef = useRef<HTMLDivElement>(null)
-  const markersRef = useRef<any[]>([])
+  const markersRef = useRef<google.maps.Marker[]>([])
 
   useEffect(() => {
     if (!mapRef.current || vagas.length === 0) return
 
     const initMap = () => {
-      const w = window as any
-      if (!w.google) {
+      if (typeof ((globalThis as unknown as { google?: unknown }).google) === 'undefined') {
         setErro('Google Maps não carregado')
         return
       }
-      const center = localizacaoUsuario || { lat: vagas[0].latitude, lng: vagas[0].longitude }
-      const map = new w.google.maps.Map(mapRef.current, {
+
+      type GoogleNamespace = typeof globalThis.google
+      const google = (globalThis as unknown as { google?: GoogleNamespace }).google!
+      const center = userLocation || { lat: vagas[0].latitude, lng: vagas[0].longitude }
+      const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
         center,
         zoom: 14,
         styles: [
@@ -44,12 +46,12 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
         googleMapRef.current = map
       }
       // Adicionar marcador da localização do usuário
-      if (localizacaoUsuario) {
-        new w.google.maps.Marker({
-          position: localizacaoUsuario,
+      if (userLocation) {
+        new google.maps.Marker({
+          position: userLocation,
           map,
           icon: {
-            path: w.google.maps.SymbolPath.CIRCLE,
+            path: google.maps.SymbolPath.CIRCLE,
             scale: 8,
             fillColor: '#4285F4',
             fillOpacity: 1,
@@ -60,16 +62,16 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
         })
       }
       // Limpar marcadores antigos
-      markersRef.current.forEach(marker => marker.setMap(null))
-      markersRef.current = []
+  markersRef.current.forEach(marker => marker.setMap(null))
+  markersRef.current = []
       // Adicionar marcadores das vagas
       vagas.forEach(vaga => {
         const isProxima = vagasProximas.includes(vaga._id)
-        const marker = new w.google.maps.Marker({
+        const marker = new google.maps.Marker({
           position: { lat: vaga.latitude, lng: vaga.longitude },
           map,
           icon: {
-            path: w.google.maps.SymbolPath.CIRCLE,
+            path: google.maps.SymbolPath.CIRCLE,
             scale: isProxima ? 12 : 10, // Vagas próximas são maiores
             fillColor: vaga.vagas_disponiveis > 0 ? '#10b981' : '#ef4444',
             fillOpacity: isProxima ? 1 : 0.7, // Vagas próximas mais visíveis
@@ -87,37 +89,12 @@ const MapContainer = ({ vagas, localizacaoUsuario, onSelectVaga, erro, setErro, 
         markersRef.current.push(marker)
       })
     }
-    const w = window as any
-    if (w.google) {
+    if ('google' in window) {
       initMap()
     } else {
-      // Verificar se já existe script do Google Maps
-      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]')
-      if (existingScript) {
-        console.log('Script do Google Maps já existe, não recarregar')
-        return
-      }
-
-      // Carregar Google Maps API
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&v=weekly`
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        console.log('Google Maps API carregada com sucesso')
-        // Esperar um pouco para garantir que as bibliotecas estejam prontas
-        setTimeout(() => {
-          initMap()
-          // Disparar evento customizado para notificar outros componentes
-          window.dispatchEvent(new Event('google-maps-loaded'))
-        }, 100)
-      }
-      script.onerror = () => {
-        setErro('Erro ao carregar o mapa. Verifique a chave da API.')
-      }
-      document.head.appendChild(script)
+      loadGoogleMaps().then(() => initMap()).catch(() => setErro('Erro ao carregar o mapa. Verifique a chave da API.'))
     }
-  }, [vagas, localizacaoUsuario, setErro, setVagaSelecionada, onSelectVaga, googleMapRef, vagasProximas])
+  }, [vagas, userLocation, setErro, setVagaSelecionada, onSelectVaga, googleMapRef, vagasProximas])
 
   return (
     <div className="map-container">

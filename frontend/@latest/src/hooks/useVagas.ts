@@ -9,7 +9,6 @@ export function useVagas() {
 
   useEffect(() => {
     buscarVagas()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const buscarVagas = async () => {

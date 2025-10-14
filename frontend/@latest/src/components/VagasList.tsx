@@ -4,15 +4,16 @@ interface VagasListProps {
   vagas: Vaga[]
   vagaSelecionada: Vaga | null
   onSelect: (vaga: Vaga) => void
-  onVerRota?: (vaga: Vaga) => void
-  localizacaoUsuario: { lat: number; lng: number } | null
+  onViewRoute?: (vaga: Vaga) => void
+  onNavigate?: (vaga: Vaga) => void
+  userLocation: { lat: number; lng: number } | null
 }
 
-const VagasList = ({ vagas, vagaSelecionada, onSelect, onVerRota, localizacaoUsuario }: VagasListProps) => {
+const VagasList = ({ vagas, vagaSelecionada, onSelect, onViewRoute, onNavigate, userLocation }: VagasListProps) => {
   return (
     <div className="vagas-list">
       <h2 className="list-title">
-        Vagas Disponíveis ({vagas.length})
+        Vagas por perto ({vagas.length})
       </h2>
       <div className="vagas-grid">
         {vagas.map(vaga => (
@@ -21,8 +22,9 @@ const VagasList = ({ vagas, vagaSelecionada, onSelect, onVerRota, localizacaoUsu
             vaga={vaga}
             selecionada={vagaSelecionada?._id === vaga._id}
             onSelect={() => onSelect(vaga)}
-            onVerRota={localizacaoUsuario ? () => onVerRota?.(vaga) : undefined}
-            localizacaoUsuario={localizacaoUsuario}
+            onViewRoute={userLocation ? () => onViewRoute?.(vaga) : undefined}
+            onNavigate={userLocation ? () => onNavigate?.(vaga) : undefined}
+            userLocation={userLocation}
           />
         ))}
       </div>
