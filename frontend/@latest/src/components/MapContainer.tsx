@@ -22,12 +22,13 @@ const MapContainer = ({ vagas, userLocation, onSelectVaga, erro, setErro, setVag
     if (!mapRef.current || vagas.length === 0) return
 
     const initMap = () => {
-      if (!('google' in window)) {
+      if (typeof ((globalThis as unknown as { google?: unknown }).google) === 'undefined') {
         setErro('Google Maps não carregado')
         return
       }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: replace with proper google.maps types
-  const google = (window as any).google
+
+      type GoogleNamespace = typeof globalThis.google
+      const google = (globalThis as unknown as { google?: GoogleNamespace }).google!
       const center = userLocation || { lat: vagas[0].latitude, lng: vagas[0].longitude }
       const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
         center,
@@ -70,7 +71,7 @@ const MapContainer = ({ vagas, userLocation, onSelectVaga, erro, setErro, setVag
           position: { lat: vaga.latitude, lng: vaga.longitude },
           map,
           icon: {
-            path: w.google.maps.SymbolPath.CIRCLE,
+            path: google.maps.SymbolPath.CIRCLE,
             scale: isProxima ? 12 : 10, // Vagas próximas são maiores
             fillColor: vaga.vagas_disponiveis > 0 ? '#10b981' : '#ef4444',
             fillOpacity: isProxima ? 1 : 0.7, // Vagas próximas mais visíveis
