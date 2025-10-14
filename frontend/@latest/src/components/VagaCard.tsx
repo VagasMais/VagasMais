@@ -1,4 +1,5 @@
 import { MapPin, Navigation } from 'lucide-react'
+import { useRouteInfo } from '../hooks/useRouteInfo'
 
 export interface Vaga {
   _id: string
@@ -20,39 +21,62 @@ interface VagaCardProps {
   userLocation?: { lat: number; lng: number } | null
 }
 
-const VagaCard = ({ vaga, selecionada, onSelect, onViewRoute, onNavigate, userLocation }: VagaCardProps) => (
-  <div
-    className={`vaga-card ${selecionada ? 'selected' : ''}`}
-    onClick={onSelect}
-  >
-    <div className="vaga-header">
-      <MapPin size={20} className="vaga-icon" />
-      <h3 className="vaga-nome">{vaga.nome}</h3>
+const VagaCard = ({ vaga, selecionada, onSelect, onViewRoute, onNavigate, userLocation }: VagaCardProps) => {
+  const { distanceText, durationText, loading, error } = useRouteInfo(
+    userLocation ?? null,
+    { lat: vaga.latitude, lng: vaga.longitude }
+  )
+
+  return (
+    <div
+      className={`vaga-card ${selecionada ? 'selected' : ''}`}
+      onClick={onSelect}
+    >
+      <div className="vaga-header">
+        <MapPin size={20} className="vaga-icon" />
+        <h3 className="vaga-nome">{vaga.nome}</h3>
+      </div>
+
+      <p className="vaga-endereco">{vaga.endereco}</p>
+
+      {userLocation && (
+        <div className="vaga-route-info">
+          {/* No cached data available in this version; show live results from useRouteInfo */}
+          {loading && <small>Carregando rota...</small>}
+          {error && <small style={{ color: '#b91c1c' }}>⚠️ {error}</small>}
+          {!loading && !error && distanceText && durationText && (
+            <small>{distanceText} · {durationText}</small>
+          )}
+        </div>
+      )}
+
+      <div className="vaga-info">
+        <span className={`vaga-status ${vaga.vagas_disponiveis > 0 ? 'disponivel' : 'ocupado'}`}>
+          {vaga.vagas_disponiveis > 0 ? 'Disponível' : 'Ocupado'}
+        </span>
+        <span className="vaga-count">
+          {vaga.vagas_disponiveis}/{vaga.total_vagas} vagas
+        </span>
+      </div>
+
+      {userLocation && (onNavigate || onViewRoute) && (
+        <button
+          onClick={e => {
+            e.stopPropagation()
+            // Prioriza abrir navegação externa (turn-by-turn) se disponível
+            if (onNavigate) return onNavigate()
+            if (onViewRoute) return onViewRoute()
+          }}
+          className="rota-button"
+        >
+          <Navigation size={16} />
+          Ver rota
+        </button>
+      )}
     </div>
-    <p className="vaga-endereco">{vaga.endereco}</p>
-    <div className="vaga-info">
-      <span className={`vaga-status ${vaga.vagas_disponiveis > 0 ? 'disponivel' : 'ocupado'}`}>
-        {vaga.vagas_disponiveis > 0 ? 'Disponível' : 'Ocupado'}
-      </span>
-      <span className="vaga-count">
-        {vaga.vagas_disponiveis}/{vaga.total_vagas} vagas
-      </span>
-    </div>
-    {userLocation && (onNavigate || onViewRoute) && (
-      <button
-        onClick={e => {
-          e.stopPropagation()
-          // Prioriza abrir navegação externa (turn-by-turn) se disponível
-          if (onNavigate) return onNavigate()
-          if (onViewRoute) return onViewRoute()
-        }}
-        className="rota-button"
-      >
-        <Navigation size={16} />
-        Ver rota
-      </button>
-    )}
-  </div>
-)
+  )
+}
+
+
 
 export default VagaCard
