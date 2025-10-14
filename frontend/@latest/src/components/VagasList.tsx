@@ -13,7 +13,7 @@ const VagasList = ({ vagas, vagaSelecionada, onSelect, onViewRoute, onNavigate, 
   return (
     <div className="vagas-list">
       <h2 className="list-title">
-        Vagas Disponíveis ({vagas.length})
+        Vagas por perto ({vagas.length})
       </h2>
       <div className="vagas-grid">
         {vagas.map(vaga => (
