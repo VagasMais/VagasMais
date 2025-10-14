@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import { MapPin, Info, Menu, X } from 'lucide-react'
-import Home from './pages/Home'
-import Sobre from './pages/Sobre'
+import HomePage from './pages/HomePage'
+import AboutPage from './pages/AboutPage'
+import type { PageType } from './types/parking'
 import './App.css'
 
+/**
+ * Main App component
+ * Handles navigation between Home and About pages
+ */
 function App() {
-  const [paginaAtual, setPaginaAtual] = useState<'home' | 'sobre'>('home')
-  const [menuAberto, setMenuAberto] = useState(false)
+  const [currentPage, setCurrentPage] = useState<PageType>('home')
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  const toggleMenu = () => setMenuAberto(!menuAberto)
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   return (
     <div className="app">
@@ -19,31 +24,31 @@ function App() {
             <MapPin size={32} className="logo-icon" />
             <h1>Vagas+</h1>
           </div>
-          
-          <button 
+
+          <button
             className="menu-button"
             onClick={toggleMenu}
             aria-label="Menu"
           >
-            {menuAberto ? <X size={24} /> : <Menu size={24} />}
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          <nav className={`nav ${menuAberto ? 'nav-open' : ''}`}>
+          <nav className={`nav ${menuOpen ? 'nav-open' : ''}`}>
             <button
-              className={`nav-button ${paginaAtual === 'home' ? 'active' : ''}`}
+              className={`nav-button ${currentPage === 'home' ? 'active' : ''}`}
               onClick={() => {
-                setPaginaAtual('home')
-                setMenuAberto(false)
+                setCurrentPage('home')
+                setMenuOpen(false)
               }}
             >
               <MapPin size={20} />
               Mapa
             </button>
             <button
-              className={`nav-button ${paginaAtual === 'sobre' ? 'active' : ''}`}
+              className={`nav-button ${currentPage === 'about' ? 'active' : ''}`}
               onClick={() => {
-                setPaginaAtual('sobre')
-                setMenuAberto(false)
+                setCurrentPage('about')
+                setMenuOpen(false)
               }}
             >
               <Info size={20} />
@@ -53,16 +58,16 @@ function App() {
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
+      {/* Main Content */}
       <main className="main-content">
-        {paginaAtual === 'home' ? <Home /> : <Sobre />}
+        {currentPage === 'home' ? <HomePage /> : <AboutPage />}
       </main>
 
-      {/* Overlay do menu mobile */}
-      {menuAberto && (
-        <div 
+      {/* Mobile menu overlay */}
+      {menuOpen && (
+        <div
           className="menu-overlay"
-          onClick={() => setMenuAberto(false)}
+          onClick={() => setMenuOpen(false)}
         />
       )}
     </div>
