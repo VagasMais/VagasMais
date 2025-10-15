@@ -2,14 +2,6 @@
  * Default constants for the application
  */
 
-import type { Coordinates } from '../types/parking'
-
-// Default location: Rio de Janeiro, Brazil
-export const DEFAULT_LOCATION: Coordinates = {
-  lat: -22.9068,
-  lng: -43.1729
-}
-
 // Search radius in kilometers
 export const SEARCH_RADIUS_KM = 3
 export const NEARBY_RADIUS_KM = 0.5
