@@ -41,7 +41,7 @@ function Footer() {
               <li className="footer-contact-item">
                 <Mail size={16} />
                 <a href="mailto:contato@vagasmais.com" className="footer-link">
-                  contato@vagasmais.com
+                  contato@vagasmais.app
                 </a>
               </li>
             </ul>

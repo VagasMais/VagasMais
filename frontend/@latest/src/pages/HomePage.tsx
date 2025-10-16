@@ -22,7 +22,7 @@ function HomePage({ onNavigateToMap }: HomePageProps) {
             playsInline
             className="background-video"
           >
-            <source src="/background.mp4" type="video/mp4" />
+            <source src="/background2.mp4" type="video/mp4" />
             {/* Fallback para navegadores que não suportam o vídeo */}
           </video>
           <div className="video-overlay"></div>
@@ -30,9 +30,15 @@ function HomePage({ onNavigateToMap }: HomePageProps) {
 
         <div className="hero-content-new">
           <h1 className="hero-title-gradient">
-            <span className="gradient-line">Vagas + Inclusão</span>
-            <span className="gradient-line">Vagas + Acessibilidade</span>
-            <span className="gradient-line">Vagas + Respeito</span>
+            <span className="gradient-line">
+              <span className="value-text">Vagas</span> <span className="plus-symbol">+</span> <span className="highlight-text">Inclusão</span>
+            </span>
+            <span className="gradient-line">
+              <span className="value-text">Vagas</span> <span className="plus-symbol">+</span> <span className="highlight-text">Acessibilidade</span>
+            </span>
+            <span className="gradient-line">
+              <span className="value-text">Vagas</span> <span className="plus-symbol">+</span> <span className="highlight-text">Respeito</span>
+            </span>
           </h1>
 
           <button className="cta-button-large" onClick={onNavigateToMap}>
@@ -52,7 +58,7 @@ function HomePage({ onNavigateToMap }: HomePageProps) {
               <div className="step-number">1</div>
               <h3 className="step-title">Busque por Endereço</h3>
               <p className="step-description">
-                Digite o endereço ou local onde você deseja encontrar vagas de estacionamento acessíveis próximas a você.
+                Digite o endereço ou local onde você deseja encontrar vagas de estacionamento acessíveis valpróximas a você.
               </p>
             </div>
 
