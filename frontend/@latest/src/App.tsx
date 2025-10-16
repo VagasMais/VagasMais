@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { MapPin, Info, Menu, X } from 'lucide-react'
+import { MapPin, Info, Menu, X, Home } from 'lucide-react'
 import HomePage from './pages/HomePage'
+import MapPage from './pages/MapPage'
 import AboutPage from './pages/AboutPage'
+import Footer from './components/Footer'
 import type { PageType } from './types/parking'
 import './App.css'
 
@@ -41,6 +43,16 @@ function App() {
                 setMenuOpen(false)
               }}
             >
+              <Home size={20} />
+              Início
+            </button>
+            <button
+              className={`nav-button ${currentPage === 'map' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentPage('map')
+                setMenuOpen(false)
+              }}
+            >
               <MapPin size={20} />
               Mapa
             </button>
@@ -60,8 +72,13 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {currentPage === 'home' ? <HomePage /> : <AboutPage />}
+        {currentPage === 'home' && <HomePage onNavigateToMap={() => setCurrentPage('map')} />}
+        {currentPage === 'map' && <MapPage />}
+        {currentPage === 'about' && <AboutPage />}
       </main>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Mobile menu overlay */}
       {menuOpen && (
