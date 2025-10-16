@@ -24,4 +24,4 @@ export interface RouteInfo {
   duration: string
 }
 
-export type PageType = 'home' | 'map' | 'about'
+export type PageType = 'home' | 'map' | 'about' | 'denuncias'

@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { MapPin, Info, Menu, X, Home } from 'lucide-react'
+import { MapPin, Info, Menu, X, Home, AlertTriangle } from 'lucide-react'
 import HomePage from './pages/HomePage'
 import MapPage from './pages/MapPage'
 import AboutPage from './pages/AboutPage'
+import DenunciasPage from './pages/DenunciasPage'
 import Footer from './components/Footer'
 import type { PageType } from './types/parking'
 import './App.css'
 
 /**
  * Main App component
- * Handles navigation between Home and About pages
+ * Handles navigation between Home, Map, Denuncias and About pages
  */
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home')
@@ -57,6 +58,16 @@ function App() {
               Mapa
             </button>
             <button
+              className={`nav-button ${currentPage === 'denuncias' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentPage('denuncias')
+                setMenuOpen(false)
+              }}
+            >
+              <AlertTriangle size={20} />
+              Denúncias
+            </button>
+            <button
               className={`nav-button ${currentPage === 'about' ? 'active' : ''}`}
               onClick={() => {
                 setCurrentPage('about')
@@ -74,6 +85,7 @@ function App() {
       <main className="main-content">
         {currentPage === 'home' && <HomePage onNavigateToMap={() => setCurrentPage('map')} />}
         {currentPage === 'map' && <MapPage />}
+        {currentPage === 'denuncias' && <DenunciasPage />}
         {currentPage === 'about' && <AboutPage />}
       </main>
 
