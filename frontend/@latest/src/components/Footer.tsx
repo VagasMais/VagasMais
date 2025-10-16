@@ -1,4 +1,4 @@
-import { MapPin, Mail, Github, Linkedin, Twitter, X, Instagram, Facebook, MessageCircle } from 'lucide-react'
+import { MapPin, Mail, Instagram, Facebook, MessageCircle } from 'lucide-react'
 
 /**
  * Footer component
