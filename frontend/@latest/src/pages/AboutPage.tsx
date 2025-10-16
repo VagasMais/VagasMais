@@ -118,7 +118,8 @@ function AboutPage() {
               Tem alguma sugestão ou encontrou um problema? Entre em contato:
             </p>
             <p className="contact-email">
-              <strong>Email:</strong> contato@vagasmais.app
+              <strong>Email:</strong>{' '}
+              <a href="mailto:contato@vagasmais.app">contato@vagasmais.app</a>
             </p>
           </section>
 

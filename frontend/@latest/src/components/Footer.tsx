@@ -1,4 +1,4 @@
-import { MapPin, Mail, Github, Linkedin } from 'lucide-react'
+import { MapPin, Mail, Github, Linkedin, Twitter, X, Instagram, Facebook, MessageCircle } from 'lucide-react'
 
 /**
  * Footer component
@@ -52,22 +52,31 @@ function Footer() {
             <h4 className="footer-section-title">Redes Sociais</h4>
             <div className="footer-social">
               <a
-                href="https://github.com"
+                href="https://wa.me/5511999999999"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
-                aria-label="GitHub"
+                aria-label="WhatsApp"
               >
-                <Github size={20} />
+                <MessageCircle size={20} />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://instagram.com/vagasmais"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
-                aria-label="LinkedIn"
+                aria-label="Instagram"
               >
-                <Linkedin size={20} />
+                <Instagram size={20} />
+              </a>
+              <a
+                href="https://facebook.com/vagasmais"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-social-link"
+                aria-label="Facebook"
+              >
+                <Facebook size={20} />
               </a>
             </div>
           </div>

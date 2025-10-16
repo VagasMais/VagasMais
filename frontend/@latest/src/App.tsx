@@ -23,7 +23,7 @@ function App() {
       <header className="header">
         <div className="header-content">
           <div className="logo">
-            <MapPin size={32} className="logo-icon" />
+            <MapPin size={40} className="logo-icon" />
             <h1>Vagas+</h1>
           </div>
 
