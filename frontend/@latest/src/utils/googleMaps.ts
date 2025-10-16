@@ -1,7 +1,11 @@
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+import { GOOGLE_MAPS_API_KEY } from '../constants/defaults'
 
 type GoogleWindow = Window & { google?: { maps?: unknown } }
 
+/**
+ * Loads the Google Maps JavaScript API
+ * Ensures the script is only loaded once and handles multiple simultaneous requests
+ */
 export function loadGoogleMaps(): Promise<void> {
   return new Promise((resolve, reject) => {
     // Use feature detection instead of unsafe casts
@@ -11,10 +15,10 @@ export function loadGoogleMaps(): Promise<void> {
       return
     }
 
-    // Evitar múltiplos carregamentos
-  const existingScript = document.querySelector('script[src*="maps.googleapis.com"]') as HTMLScriptElement | null
+    // Prevent multiple loadings
+    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]') as HTMLScriptElement | null
     if (existingScript) {
-      // Pode já estar carregando; escutar evento
+      // Script may already be loading; listen for event
       const onLoaded = () => {
         window.removeEventListener('google-maps-loaded', onLoaded)
         resolve()
@@ -32,7 +36,7 @@ export function loadGoogleMaps(): Promise<void> {
       resolve()
     }
     script.onerror = () => {
-      reject(new Error('Erro ao carregar Google Maps API'))
+      reject(new Error('Failed to load Google Maps API'))
     }
     document.head.appendChild(script)
   })

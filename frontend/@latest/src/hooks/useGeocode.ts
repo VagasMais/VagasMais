@@ -1,21 +1,24 @@
 import { useState } from 'react'
+import type { Coordinates } from '../types/parking'
+import { ERROR_MESSAGES } from '../constants/defaults'
 
-export interface Coordenadas {
-  lat: number
-  lng: number
-}
+/**
+ * Hook for geocoding addresses and calculating distances
+ */
+export function useGeocode() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-export function useGeocoding() {
-  const [carregando, setCarregando] = useState(false)
-  const [erro, setErro] = useState('')
-
-  const geocodificar = async (endereco: string): Promise<Coordenadas | null> => {
-    setCarregando(true)
-    setErro('')
+  /**
+   * Convert an address to coordinates using Google Geocoding API
+   */
+  const geocodeAddress = async (address: string): Promise<Coordinates | null> => {
+    setLoading(true)
+    setError('')
 
     try {
       if (typeof ((globalThis as unknown as { google?: unknown }).google) === 'undefined') {
-        setErro('Google Maps não carregado')
+        setError(ERROR_MESSAGES.MAPS_NOT_LOADED)
         return null
       }
 
@@ -25,9 +28,9 @@ export function useGeocoding() {
 
       return new Promise((resolve, reject) => {
         geocoder.geocode(
-          { address: endereco },
+          { address },
           (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) => {
-            setCarregando(false)
+            setLoading(false)
 
             if (status === 'OK' && results && results[0]) {
               const location = results[0].geometry.location
@@ -36,24 +39,28 @@ export function useGeocoding() {
                 lng: location.lng(),
               })
             } else {
-              setErro('Endereço não encontrado')
-              reject(new Error('Endereço não encontrado'))
+              setError(ERROR_MESSAGES.ADDRESS_NOT_FOUND)
+              reject(new Error(ERROR_MESSAGES.ADDRESS_NOT_FOUND))
             }
           }
         )
       })
     } catch {
-      setCarregando(false)
-      setErro('Erro ao buscar endereço')
+      setLoading(false)
+      setError(ERROR_MESSAGES.GEOCODING_ERROR)
       return null
     }
   }
 
-  const calcularDistancia = (
-    coord1: Coordenadas,
-    coord2: Coordenadas
+  /**
+   * Calculate distance between two coordinates using Haversine formula
+   * @returns Distance in kilometers
+   */
+  const calculateDistance = (
+    coord1: Coordinates,
+    coord2: Coordinates
   ): number => {
-    const R = 6371 // Raio da Terra em km
+    const R = 6371 // Earth's radius in km
     const dLat = (coord2.lat - coord1.lat) * Math.PI / 180
     const dLng = (coord2.lng - coord1.lng) * Math.PI / 180
     const a =
@@ -62,8 +69,8 @@ export function useGeocoding() {
       Math.cos(coord2.lat * Math.PI / 180) *
       Math.sin(dLng / 2) * Math.sin(dLng / 2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return R * c // Distância em km
+    return R * c // Distance in km
   }
 
-  return { geocodificar, calcularDistancia, carregando, erro }
+  return { geocodeAddress, calculateDistance, loading, error }
 }

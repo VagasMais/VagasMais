@@ -1,115 +1,127 @@
 import { Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import type { Coordinates } from '../types/parking'
 
-interface SearchBarProps {
+interface AddressSearchBarProps {
   value: string
   onChange: (value: string) => void
   onClear?: () => void
   placeholder?: string
-  onSelectAddress?: (address: string, coordinates: { lat: number; lng: number }) => void
+  onSelectAddress?: (address: string, coordinates: Coordinates) => void
 }
 
-const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: SearchBarProps) => {
+/**
+ * Search bar with Google Places autocomplete
+ * Allows users to search for addresses and get coordinates
+ */
+const AddressSearchBar = ({
+  value,
+  onChange,
+  onClear,
+  placeholder,
+  onSelectAddress
+}: AddressSearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null)
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+
   // Create a local alias for the google namespace type using globalThis to avoid self-reference
   type GoogleNamespace = typeof globalThis.google
-  const google = typeof window !== 'undefined' ? (globalThis as unknown as { google?: GoogleNamespace }).google : undefined
+  const google = typeof window !== 'undefined'
+    ? (globalThis as unknown as { google?: GoogleNamespace }).google
+    : undefined
 
   useEffect(() => {
-      const initAutocomplete = () => {
-      // Validação mais robusta
+    const initAutocomplete = () => {
+      // Robust validation
       if (typeof google === 'undefined' || !google?.maps?.places?.AutocompleteService) {
         return false
       }
 
-      // Configurar Google Places Autocomplete
+      // Setup Google Places Autocomplete
       if (!autocompleteRef.current) {
         try {
           autocompleteRef.current = new google.maps.places.AutocompleteService()
           return true
         } catch (error) {
-          console.error('Erro ao inicializar AutocompleteService:', error)
+          console.error('Error initializing AutocompleteService:', error)
           return false
         }
       }
       return true
     }
 
-    // Tentar inicializar imediatamente
+    // Try to initialize immediately
     initAutocomplete()
 
-    // Escutar evento de carregamento do Google Maps
+    // Listen for Google Maps loaded event
     const handleGoogleMapsLoaded = () => {
-  // Evento google-maps-loaded: tenta inicializar AutocompleteService
-      // Tentar algumas vezes com delay
+      // Try several times with delay
       let attempts = 0
       const tryInit = () => {
         if (initAutocomplete() || attempts >= 5) {
           return
         }
         attempts++
-  // tentativa de inicialização
         setTimeout(tryInit, 200)
       }
       tryInit()
     }
 
-  window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded)
+    window.addEventListener('google-maps-loaded', handleGoogleMapsLoaded)
 
-    // Cleanup ao desmontar
+    // Cleanup on unmount
     return () => {
       autocompleteRef.current = null
       window.removeEventListener('google-maps-loaded', handleGoogleMapsLoaded)
     }
   }, [google])
 
-  const handleInputChange = async (texto: string) => {
-    onChange(texto)
+  const handleInputChange = async (text: string) => {
+    onChange(text)
 
-    if (!texto || texto.length < 3) {
+    if (!text || text.length < 3) {
       setSuggestions([])
       setShowSuggestions(false)
       return
     }
 
     if (typeof google === 'undefined' || !google?.maps?.places?.AutocompleteService) {
-      console.warn('Google Maps Places API não carregada ainda')
+      console.warn('Google Maps Places API not loaded yet')
       return
     }
 
-      if (!autocompleteRef.current) {
-      console.warn('AutocompleteService não inicializado, tentando criar...')
+    if (!autocompleteRef.current) {
+      console.warn('AutocompleteService not initialized, trying to create...')
       try {
-  autocompleteRef.current = new google.maps.places.AutocompleteService()
+        autocompleteRef.current = new google.maps.places.AutocompleteService()
       } catch (error) {
-        console.error('Erro ao criar AutocompleteService:', error)
+        console.error('Error creating AutocompleteService:', error)
         return
       }
     }
 
-    // Buscar sugestões
-      try {
-        autocompleteRef.current!.getPlacePredictions(
-          {
-            input: texto,
-            componentRestrictions: { country: 'br' } // Restrito ao Brasil
-          },
-          (predictions, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-              setSuggestions(predictions)
-              setShowSuggestions(true)
-            } else {
-              setSuggestions([])
-              setShowSuggestions(false)
-            }
+    // Fetch suggestions
+    try {
+      autocompleteRef.current!.getPlacePredictions(
+        {
+          input: text,
+          componentRestrictions: { country: 'br' } // Restricted to Brazil
+        },
+        (predictions, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+            setSuggestions(predictions)
+            setShowSuggestions(true)
+          } else {
+            setSuggestions([])
+            setShowSuggestions(false)
           }
-        )
-      } catch (err) {
-        console.error('Erro ao buscar sugestões:', err)
-      }
+        }
+      )
+    } catch (err) {
+      console.error('Error fetching suggestions:', err)
+    }
   }
 
   const handleSelectSuggestion = (suggestion: google.maps.places.AutocompletePrediction) => {
@@ -117,10 +129,10 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
     setShowSuggestions(false)
     setSuggestions([])
 
-    // Geocodificar o endereço selecionado
-  if (typeof google === 'undefined') return
+    // Geocode the selected address
+    if (typeof google === 'undefined') return
 
-  const geocoder = new google.maps.Geocoder()
+    const geocoder = new google.maps.Geocoder()
     geocoder.geocode(
       { placeId: suggestion.place_id },
       (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) => {
@@ -158,10 +170,9 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
             <X size={20} />
           </button>
         )}
-        {/* debug info removed for production */}
       </div>
 
-      {/* Lista de sugestões */}
+      {/* Suggestions list */}
       {showSuggestions && suggestions.length > 0 && (
         <div style={{
           position: 'absolute',
@@ -204,4 +215,4 @@ const SearchBar = ({ value, onChange, onClear, placeholder, onSelectAddress }: S
   )
 }
 
-export default SearchBar
+export default AddressSearchBar

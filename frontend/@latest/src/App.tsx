@@ -1,14 +1,22 @@
 import { useState } from 'react'
-import { MapPin, Info, Menu, X } from 'lucide-react'
-import Home from './pages/Home'
-import Sobre from './pages/Sobre'
+import { MapPin, Info, Menu, X, Home, AlertTriangle } from 'lucide-react'
+import HomePage from './pages/HomePage'
+import MapPage from './pages/MapPage'
+import AboutPage from './pages/AboutPage'
+import DenunciasPage from './pages/DenunciasPage'
+import Footer from './components/Footer'
+import type { PageType } from './types/parking'
 import './App.css'
 
+/**
+ * Main App component
+ * Handles navigation between Home, Map, Denuncias and About pages
+ */
 function App() {
-  const [paginaAtual, setPaginaAtual] = useState<'home' | 'sobre'>('home')
-  const [menuAberto, setMenuAberto] = useState(false)
+  const [currentPage, setCurrentPage] = useState<PageType>('home')
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  const toggleMenu = () => setMenuAberto(!menuAberto)
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   return (
     <div className="app">
@@ -16,34 +24,54 @@ function App() {
       <header className="header">
         <div className="header-content">
           <div className="logo">
-            <MapPin size={32} className="logo-icon" />
-            <h1>Vagas+</h1>
+            <MapPin size={40} className="logo-icon" />
+            <h1>Vagas<span className="logo-plus">+</span></h1>
           </div>
-          
-          <button 
+
+          <button
             className="menu-button"
             onClick={toggleMenu}
             aria-label="Menu"
           >
-            {menuAberto ? <X size={24} /> : <Menu size={24} />}
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          <nav className={`nav ${menuAberto ? 'nav-open' : ''}`}>
+          <nav className={`nav ${menuOpen ? 'nav-open' : ''}`}>
             <button
-              className={`nav-button ${paginaAtual === 'home' ? 'active' : ''}`}
+              className={`nav-button ${currentPage === 'home' ? 'active' : ''}`}
               onClick={() => {
-                setPaginaAtual('home')
-                setMenuAberto(false)
+                setCurrentPage('home')
+                setMenuOpen(false)
+              }}
+            >
+              <Home size={20} />
+              Início
+            </button>
+            <button
+              className={`nav-button ${currentPage === 'map' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentPage('map')
+                setMenuOpen(false)
               }}
             >
               <MapPin size={20} />
               Mapa
             </button>
             <button
-              className={`nav-button ${paginaAtual === 'sobre' ? 'active' : ''}`}
+              className={`nav-button ${currentPage === 'denuncias' ? 'active' : ''}`}
               onClick={() => {
-                setPaginaAtual('sobre')
-                setMenuAberto(false)
+                setCurrentPage('denuncias')
+                setMenuOpen(false)
+              }}
+            >
+              <AlertTriangle size={20} />
+              Denúncias
+            </button>
+            <button
+              className={`nav-button ${currentPage === 'about' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentPage('about')
+                setMenuOpen(false)
               }}
             >
               <Info size={20} />
@@ -53,16 +81,22 @@ function App() {
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
+      {/* Main Content */}
       <main className="main-content">
-        {paginaAtual === 'home' ? <Home /> : <Sobre />}
+        {currentPage === 'home' && <HomePage onNavigateToMap={() => setCurrentPage('map')} />}
+        {currentPage === 'map' && <MapPage />}
+        {currentPage === 'denuncias' && <DenunciasPage />}
+        {currentPage === 'about' && <AboutPage />}
       </main>
 
-      {/* Overlay do menu mobile */}
-      {menuAberto && (
-        <div 
+      {/* Footer */}
+      <Footer />
+
+      {/* Mobile menu overlay */}
+      {menuOpen && (
+        <div
           className="menu-overlay"
-          onClick={() => setMenuAberto(false)}
+          onClick={() => setMenuOpen(false)}
         />
       )}
     </div>
