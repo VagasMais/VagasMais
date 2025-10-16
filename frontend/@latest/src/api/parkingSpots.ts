@@ -22,6 +22,9 @@ export async function fetchParkingSpots(): Promise<ParkingSpot[]> {
     total_vagas: number
     vagas_disponiveis: number
     acessivel: boolean
+    vaga_gestante: boolean
+    vaga_idoso: boolean
+    vaga_pcd: boolean
 
   }) => ({
     _id: spot._id,
@@ -32,5 +35,8 @@ export async function fetchParkingSpots(): Promise<ParkingSpot[]> {
     totalSpots: spot.total_vagas,
     availableSpots: spot.vagas_disponiveis,
     accessible: spot.acessivel,
+    parking_pregnant: spot.vaga_gestante,
+    parking_elderly: spot.vaga_idoso,
+    parking_disabled: spot.vaga_pcd,
   }))
 }

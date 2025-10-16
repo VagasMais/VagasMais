@@ -7,6 +7,9 @@ class Vaga(BaseModel):
     latitude: float
     longitude: float
     endereco: str
-    acessivel: bool
+    acessivel: bool = False
     total_vagas: int
     vagas_disponiveis: int
+    vaga_gestante: bool = False
+    vaga_idoso: bool = False
+    vaga_pcd: bool = False

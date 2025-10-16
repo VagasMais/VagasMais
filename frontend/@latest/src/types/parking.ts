@@ -11,7 +11,9 @@ export interface ParkingSpot {
   longitude: number
   totalSpots: number
   availableSpots: number
-  acessible: boolean
+  parking_pregnant: boolean
+  parking_elderly: boolean
+  parking_disabled: boolean
 }
 
 export interface Coordinates {
