@@ -24,7 +24,7 @@ function App() {
         <div className="header-content">
           <div className="logo">
             <MapPin size={40} className="logo-icon" />
-            <h1>Vagas+</h1>
+            <h1>Vagas<span className="logo-plus">+</span></h1>
           </div>
 
           <button
