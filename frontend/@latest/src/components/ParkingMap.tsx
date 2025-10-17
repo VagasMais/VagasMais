@@ -3,6 +3,29 @@ import { loadGoogleMaps } from '../utils/googleMaps'
 import type { ParkingSpot, Coordinates } from '../types/parking'
 import { DEFAULT_ZOOM, ERROR_MESSAGES } from '../constants/defaults'
 
+/**
+ * Cor do waypoint no mapa
+ */
+const getMarkerColor = (spot: ParkingSpot): string => {
+  if (spot.parking_disabled) return '#f97316' // Orange for PCD
+  if (spot.parking_pregnant) return '#3b82f6' // Blue for pregnant
+  if (spot.parking_elderly) return '#f87171' // Light red for elderly
+  return '#10b981' // Green
+}
+
+/**
+ * Descricao do waypoint no mapa
+ */
+const getMarkerTitle = (spot: ParkingSpot): string => {
+  const types: string[] = []
+  if (spot.parking_disabled) types.push('PCD')
+  if (spot.parking_pregnant) types.push('Gestante')
+  if (spot.parking_elderly) types.push('Idoso')
+
+  const typeText = types.length > 0 ? ` (${types.join(', ')})` : ''
+  return `${spot.name}${typeText}`
+}
+
 interface ParkingMapProps {
   spots: ParkingSpot[]
   userLocation: Coordinates | null
@@ -84,18 +107,21 @@ const ParkingMap = ({
       // Add parking spot markers
       spots.forEach(spot => {
         const isNearby = nearbySpotIds.includes(spot._id)
+        const markerColor = getMarkerColor(spot)
+        const markerTitle = getMarkerTitle(spot)
+
         const marker = new google.maps.Marker({
           position: { lat: spot.latitude, lng: spot.longitude },
           map,
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: isNearby ? 12 : 10, // Nearby spots are larger
-            fillColor: spot.availableSpots > 0 ? '#10b981' : '#ef4444',
+            fillColor: markerColor, // Color based on spot type (PCD, Pregnant, Elderly)
             fillOpacity: isNearby ? 1 : 0.7, // Nearby spots more visible
             strokeColor: isNearby ? '#facc15' : '#ffffff', // Yellow border for nearby spots
             strokeWeight: isNearby ? 3 : 2
           },
-          title: spot.name,
+          title: markerTitle, // Includes spot type in title
           zIndex: isNearby ? 1000 : 1 // Nearby spots appear on top
         })
 
