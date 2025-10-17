@@ -35,19 +35,18 @@ export function useLocation() {
 
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = 'Permissão de localização negada. Usando localização padrão.'
+              errorMessage = ERROR_MESSAGES.LOCATION_PERMISSION_DENIED
               break
             case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Localização indisponível. Usando localização padrão.'
+              errorMessage = ERROR_MESSAGES.LOCATION_POSITION_UNAVAILABLE
               break
             case error.TIMEOUT:
-              errorMessage = 'Tempo esgotado ao obter localização. Usando localização padrão.'
+              errorMessage = ERROR_MESSAGES.LOCATION_TIMEOUT
               break
           }
 
           console.warn('Error getting location:', errorMessage, error)
           setError(errorMessage)
-          // Use default location (Rio de Janeiro)
         },
         options
       )

@@ -17,6 +17,9 @@ export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 // UI Text (in Portuguese for users)
 export const ERROR_MESSAGES = {
   LOCATION_UNAVAILABLE: 'Não foi possível obter sua localização. Tente novamente mais tarde.',
+  LOCATION_PERMISSION_DENIED: 'Permissão de localização negada.',
+  LOCATION_POSITION_UNAVAILABLE: 'Localização indisponível.',
+  LOCATION_TIMEOUT: 'Tempo esgotado ao obter localização.',
   FETCH_SPOTS_FAILED: 'Não foi possível carregar as vagas. Tente novamente mais tarde.',
   MAPS_NOT_LOADED: 'Google Maps não carregado',
   ROUTE_NOT_AVAILABLE: 'Não foi possível obter informações de rota',
