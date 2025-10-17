@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from '../constants/defaults'
 
 /**
  * Hook to get and manage user's geolocation
- * Falls back to default location (Rio de Janeiro) if unavailable
+ * Tries low accuracy first, then falls back to high accuracy GPS
  */
 export function useLocation() {
   const [location, setLocation] = useState<Coordinates | null>(null)
@@ -23,14 +23,14 @@ export function useLocation() {
     // Try with low accuracy first (faster, uses network location)
     const lowAccuracyOptions = {
       enableHighAccuracy: false,
-      timeout: 10000, // 10 seconds
+      timeout: 8000, // 8 seconds
       maximumAge: 300000 // Cache for 5 minutes
     }
 
     // Fallback with high accuracy (uses GPS)
     const highAccuracyOptions = {
       enableHighAccuracy: true,
-      timeout: 15000, // 15 seconds
+      timeout: 30000, // 30 seconds - more time for GPS to lock
       maximumAge: 0 // No cache
     }
 

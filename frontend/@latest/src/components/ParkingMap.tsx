@@ -58,7 +58,11 @@ const ParkingMap = ({
     if (!mapRef.current || spots.length === 0) return
 
     const initMap = () => {
-      if (typeof ((globalThis as unknown as { google?: unknown }).google) === 'undefined') {
+      // More thorough check for Google Maps API
+      if (typeof window.google === 'undefined' ||
+          typeof window.google.maps === 'undefined' ||
+          typeof window.google.maps.Map === 'undefined') {
+        console.error('Google Maps API not fully loaded')
         setError(ERROR_MESSAGES.MAPS_NOT_LOADED)
         return
       }
@@ -66,10 +70,8 @@ const ParkingMap = ({
       // Clear any previous errors since we're successfully initializing
       setError('')
 
-      type GoogleNamespace = typeof globalThis.google
-      const google = (globalThis as unknown as { google?: GoogleNamespace }).google!
       const center = userLocation || { lat: spots[0].latitude, lng: spots[0].longitude }
-      const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
+      const map = new window.google.maps.Map(mapRef.current as HTMLDivElement, {
         center,
         zoom: DEFAULT_ZOOM,
         styles: [
@@ -88,11 +90,11 @@ const ParkingMap = ({
 
       // Add user location marker
       if (userLocation) {
-        new google.maps.Marker({
+        new window.google.maps.Marker({
           position: userLocation,
           map,
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
+            path: window.google.maps.SymbolPath.CIRCLE,
             scale: 8,
             fillColor: '#4285F4',
             fillOpacity: 1,
@@ -113,11 +115,11 @@ const ParkingMap = ({
         const markerColor = getMarkerColor(spot)
         const markerTitle = getMarkerTitle(spot)
 
-        const marker = new google.maps.Marker({
+        const marker = new window.google.maps.Marker({
           position: { lat: spot.latitude, lng: spot.longitude },
           map,
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
+            path: window.google.maps.SymbolPath.CIRCLE,
             scale: isNearby ? 12 : 10, // Nearby spots are larger
             fillColor: markerColor, // Color based on spot type (PCD, Pregnant, Elderly)
             fillOpacity: isNearby ? 1 : 0.7, // Nearby spots more visible
@@ -138,21 +140,20 @@ const ParkingMap = ({
       })
     }
 
-    if ('google' in window) {
-      console.log('Google Maps already loaded, initializing map...')
-      initMap()
-    } else {
-      console.log('Loading Google Maps API...')
-      loadGoogleMaps()
-        .then(() => {
-          console.log('Google Maps loaded successfully, initializing map...')
+    // Always use loadGoogleMaps to ensure API is fully ready
+    console.log('Ensuring Google Maps API is loaded...')
+    loadGoogleMaps()
+      .then(() => {
+        console.log('Google Maps loaded successfully, initializing map...')
+        // Add small delay to ensure all Google Maps objects are ready
+        setTimeout(() => {
           initMap()
-        })
-        .catch((error) => {
-          console.error('Error loading Google Maps:', error)
-          setError('Erro ao carregar o mapa. Verifique a chave da API.')
-        })
-    }
+        }, 100)
+      })
+      .catch((error) => {
+        console.error('Error loading Google Maps:', error)
+        setError('Erro ao carregar o mapa. Verifique a chave da API.')
+      })
   }, [spots, userLocation, setError, setSelectedSpot, onSelectSpot, googleMapRef, nearbySpotIds])
 
   return (
