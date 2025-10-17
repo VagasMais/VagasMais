@@ -15,44 +15,63 @@ export function useLocation() {
   }, [])
 
   const fetchLocation = () => {
-    if (navigator.geolocation) {
-      const options = {
-        enableHighAccuracy: false, // Mais rápido, menos preciso
-        timeout: 10000, // 10 segundos
-        maximumAge: 300000 // Cache de 5 minutos
+    if (!navigator.geolocation) {
+      setError(ERROR_MESSAGES.LOCATION_UNAVAILABLE)
+      return
+    }
+
+    // Try with low accuracy first (faster, uses network location)
+    const lowAccuracyOptions = {
+      enableHighAccuracy: false,
+      timeout: 10000, // 10 seconds
+      maximumAge: 300000 // Cache for 5 minutes
+    }
+
+    // Fallback with high accuracy (uses GPS)
+    const highAccuracyOptions = {
+      enableHighAccuracy: true,
+      timeout: 15000, // 15 seconds
+      maximumAge: 0 // No cache
+    }
+
+    const onSuccess = (position: GeolocationPosition) => {
+      setLocation({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      })
+      setError('')
+    }
+
+    const onError = (error: GeolocationPositionError) => {
+      let errorMessage = ERROR_MESSAGES.LOCATION_UNAVAILABLE
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = ERROR_MESSAGES.LOCATION_PERMISSION_DENIED
+          break
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = ERROR_MESSAGES.LOCATION_POSITION_UNAVAILABLE
+          // Try with high accuracy as fallback
+          console.info('Trying with high accuracy GPS...')
+          navigator.geolocation.getCurrentPosition(
+            onSuccess,
+            (highAccError) => {
+              console.warn('High accuracy also failed:', highAccError)
+              setError(errorMessage)
+            },
+            highAccuracyOptions
+          )
+          return // Don't set error yet, wait for high accuracy attempt
+        case error.TIMEOUT:
+          errorMessage = ERROR_MESSAGES.LOCATION_TIMEOUT
+          break
       }
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          })
-          setError('') // Limpa erro se conseguiu localização
-        },
-        (error) => {
-          let errorMessage = ERROR_MESSAGES.LOCATION_UNAVAILABLE
-
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = ERROR_MESSAGES.LOCATION_PERMISSION_DENIED
-              break
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = ERROR_MESSAGES.LOCATION_POSITION_UNAVAILABLE
-              break
-            case error.TIMEOUT:
-              errorMessage = ERROR_MESSAGES.LOCATION_TIMEOUT
-              break
-          }
-
-          console.warn('Error getting location:', errorMessage, error)
-          setError(errorMessage)
-        },
-        options
-      )
-    } else {
-      setError(ERROR_MESSAGES.LOCATION_UNAVAILABLE)
+      console.warn('Error getting location:', errorMessage, error)
+      setError(errorMessage)
     }
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, lowAccuracyOptions)
   }
 
   return { location, error, fetchLocation }

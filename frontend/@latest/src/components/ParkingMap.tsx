@@ -63,6 +63,9 @@ const ParkingMap = ({
         return
       }
 
+      // Clear any previous errors since we're successfully initializing
+      setError('')
+
       type GoogleNamespace = typeof globalThis.google
       const google = (globalThis as unknown as { google?: GoogleNamespace }).google!
       const center = userLocation || { lat: spots[0].latitude, lng: spots[0].longitude }
@@ -136,11 +139,19 @@ const ParkingMap = ({
     }
 
     if ('google' in window) {
+      console.log('Google Maps already loaded, initializing map...')
       initMap()
     } else {
+      console.log('Loading Google Maps API...')
       loadGoogleMaps()
-        .then(() => initMap())
-        .catch(() => setError('Erro ao carregar o mapa. Verifique a chave da API.'))
+        .then(() => {
+          console.log('Google Maps loaded successfully, initializing map...')
+          initMap()
+        })
+        .catch((error) => {
+          console.error('Error loading Google Maps:', error)
+          setError('Erro ao carregar o mapa. Verifique a chave da API.')
+        })
     }
   }, [spots, userLocation, setError, setSelectedSpot, onSelectSpot, googleMapRef, nearbySpotIds])
 
