@@ -446,11 +446,12 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.08s;
+  transition: all 0.2s ease;
 }
 
 .rota-button:hover {
   background: var(--primary-dark);
+  transform: translateY(-2px);
 }
 
 /* Página Sobre */
@@ -1359,5 +1360,236 @@
   .navigation-option-icon svg {
     width: 24px;
     height: 24px;
+  }
+}
+
+/* Vaga Actions Container */
+.vaga-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vaga-actions-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Camera Button */
+.camera-button {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.camera-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.camera-button:active {
+  transform: translateY(0);
+}
+
+.camera-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Street View Modal - Mobile First Design */
+.streetview-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  animation: fadeIn 0.25s ease;
+  display: flex;
+  align-items: flex-end;
+}
+
+.streetview-modal-content {
+  background: white;
+  width: 100%;
+  max-height: 95vh;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideUpMobile 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+@keyframes slideUpMobile {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.streetview-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+  position: relative;
+}
+
+/* Indicador de "arrastar para baixo" no mobile */
+.streetview-modal-header::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.streetview-modal-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding-top: 0.75rem;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 0.5rem;
+}
+
+.streetview-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+  margin-top: 0.75rem;
+}
+
+.streetview-modal-close:active {
+  background: #e2e8f0;
+  transform: scale(0.95);
+}
+
+.streetview-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.streetview-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  max-height: 80vh;
+}
+
+.streetview-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+}
+
+.streetview-error-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.streetview-error-text {
+  color: #94a3b8;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .streetview-modal-overlay {
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .streetview-modal-content {
+    max-width: 900px;
+    max-height: 90vh;
+    border-radius: 16px;
+    animation: modalSlideUp 0.3s ease;
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .streetview-modal-header::before {
+    display: none;
+  }
+
+  .streetview-modal-header {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .streetview-modal-title {
+    font-size: 1.5rem;
+    padding-top: 0;
+  }
+
+  .streetview-modal-close {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    margin-top: 0;
+  }
+
+  .streetview-modal-close:hover {
+    background: #e2e8f0;
+    transform: rotate(90deg);
+  }
+
+  .streetview-modal-close:active {
+    transform: rotate(90deg) scale(0.95);
+  }
+
+  .streetview-image {
+    max-height: none;
   }
 }

@@ -1,6 +1,8 @@
 import { MapPin, Navigation } from 'lucide-react'
+import { useState } from 'react'
 import type { ParkingSpot, Coordinates } from '../types/parking'
 import { useRoute } from '../hooks/useRoute'
+import StreetViewModal from './StreetViewModal'
 
 interface ParkingSpotCardProps {
   spot: ParkingSpot
@@ -19,6 +21,8 @@ const ParkingSpotCard = ({
   onNavigate,
   userLocation
 }: ParkingSpotCardProps) => {
+  const [isStreetViewOpen, setIsStreetViewOpen] = useState(false)
+
   const { distanceText, durationText, loading, error } = useRoute(
     userLocation ?? null,
     { lat: spot.latitude, lng: spot.longitude }
@@ -90,20 +94,43 @@ const ParkingSpotCard = ({
         </span>
       </div>
 
-      {userLocation && (onNavigate || onViewRoute) && (
+      <div className="vaga-actions">
+        <div className="vaga-actions-left">
+          {userLocation && (onNavigate || onViewRoute) && (
+            <button
+              onClick={e => {
+                e.stopPropagation()
+                // Prioritize external navigation (turn-by-turn) if available
+                if (onNavigate) return onNavigate()
+                if (onViewRoute) return onViewRoute()
+              }}
+              className="rota-button"
+            >
+              <Navigation size={16} />
+              Ver rota
+            </button>
+          )}
+        </div>
+
         <button
-          onClick={e => {
+          onClick={(e) => {
             e.stopPropagation()
-            // Prioritize external navigation (turn-by-turn) if available
-            if (onNavigate) return onNavigate()
-            if (onViewRoute) return onViewRoute()
+            setIsStreetViewOpen(true)
           }}
-          className="rota-button"
+          className="camera-button"
+          aria-label="Ver Street View"
+          title="Ver foto do local"
         >
-          <Navigation size={16} />
-          Ver rota
+          <img src="/public/câmera.png" alt="Câmera" className="camera-icon" />
         </button>
-      )}
+      </div>
+
+      <StreetViewModal
+        isOpen={isStreetViewOpen}
+        onClose={() => setIsStreetViewOpen(false)}
+        location={{ lat: spot.latitude, lng: spot.longitude }}
+        title={spot.name}
+      />
     </div>
   )
 }
