@@ -2,21 +2,11 @@ import { useState, useEffect } from 'react'
 import type { Coordinates } from '../types/parking'
 import { ERROR_MESSAGES } from '../constants/defaults'
 
-// teste fake location
-const FAKE_LOCATION: Coordinates = { lat: -23.5505, lng: -46.6333 }
-
 export function useLocation() {
   const [location, setLocation] = useState<Coordinates | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    // teste fake location
-    if (FAKE_LOCATION) {
-      setLocation(FAKE_LOCATION)
-      setError('')
-      return
-    }
-
     fetchLocation()
   }, [])
 
