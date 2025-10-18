@@ -4,10 +4,10 @@ import type { ParkingSpot, Coordinates } from '../types/parking'
 import ParkingMap from '../components/ParkingMap'
 import AddressSearchBar from '../components/AddressSearchBar'
 import ParkingSpotsList from '../components/ParkingSpotsList'
+import NavigationModal from '../components/NavigationModal'
 import { useParkingSpots } from '../hooks/useParkingSpots'
 import { useLocation } from '../hooks/useLocation'
 import { useGeocode } from '../hooks/useGeocode'
-import { openExternalNavigation } from '../utils/externalNavigation'
 import { SEARCH_RADIUS_KM, NEARBY_RADIUS_KM, FOCUSED_ZOOM, ERROR_MESSAGES } from '../constants/defaults'
 
 /**
@@ -22,6 +22,12 @@ function MapPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [mapError, setMapError] = useState('')
   const [selectedAddress, setSelectedAddress] = useState<Coordinates | null>(null)
+  const [isNavigationModalOpen, setIsNavigationModalOpen] = useState(false)
+  const [navigationDestination, setNavigationDestination] = useState<{
+    lat: number
+    lng: number
+    name: string
+  } | null>(null)
   const googleMapRef = useRef<google.maps.Map | null>(null)
   const directionsRendererRef = useRef<google.maps.DirectionsRenderer | null>(null)
   const searchMarkerRef = useRef<google.maps.Marker | null>(null)
@@ -120,6 +126,31 @@ function MapPage() {
   }
 
   /**
+   * Open navigation modal with destination
+   */
+  const handleNavigate = (spot: ParkingSpot) => {
+    if (!userLocation) {
+      alert(ERROR_MESSAGES.ALLOW_LOCATION_ACCESS)
+      return
+    }
+
+    setNavigationDestination({
+      lat: spot.latitude,
+      lng: spot.longitude,
+      name: spot.name
+    })
+    setIsNavigationModalOpen(true)
+  }
+
+  /**
+   * Close navigation modal
+   */
+  const handleCloseNavigationModal = () => {
+    setIsNavigationModalOpen(false)
+    setNavigationDestination(null)
+  }
+
+  /**
    * Filter spots by text search OR proximity to selected address
    */
   const filteredSpots = spots.filter(spot => {
@@ -188,11 +219,21 @@ function MapPage() {
         selectedSpot={selectedSpot}
         onSelect={setSelectedSpot}
         onViewRoute={userLocation ? drawRoute : undefined}
-        onNavigate={userLocation
-          ? (spot: ParkingSpot) => openExternalNavigation(userLocation, spot.latitude, spot.longitude)
-          : undefined}
+        onNavigate={userLocation ? handleNavigate : undefined}
         userLocation={userLocation}
       />
+
+      {/* Navigation modal */}
+      {navigationDestination && (
+        <NavigationModal
+          isOpen={isNavigationModalOpen}
+          onClose={handleCloseNavigationModal}
+          origin={userLocation}
+          destinationLat={navigationDestination.lat}
+          destinationLng={navigationDestination.lng}
+          destinationName={navigationDestination.name}
+        />
+      )}
 
       {/* Location error */}
       {locationError && (

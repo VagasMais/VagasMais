@@ -2,15 +2,21 @@ import { useState, useEffect } from 'react'
 import type { Coordinates } from '../types/parking'
 import { ERROR_MESSAGES } from '../constants/defaults'
 
-/**
- * Hook to get and manage user's geolocation
- * Tries low accuracy first, then falls back to high accuracy GPS
- */
+// teste fake location
+const FAKE_LOCATION: Coordinates = { lat: -23.5505, lng: -46.6333 }
+
 export function useLocation() {
   const [location, setLocation] = useState<Coordinates | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // teste fake location
+    if (FAKE_LOCATION) {
+      setLocation(FAKE_LOCATION)
+      setError('')
+      return
+    }
+
     fetchLocation()
   }, [])
 

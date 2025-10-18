@@ -11,10 +11,6 @@ interface ParkingSpotCardProps {
   userLocation?: Coordinates | null
 }
 
-/**
- * Card component displaying parking spot information
- * Shows availability, distance, and navigation options
- */
 const ParkingSpotCard = ({
   spot,
   isSelected,
