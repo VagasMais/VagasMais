@@ -1,9 +1,36 @@
-import { AlertTriangle, FileText, Camera, MapPin } from 'lucide-react'
+import { AlertTriangle, FileText, Camera, MapPin, CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { ReportForm } from '../components/ReportForm'
+import type { ReportFormData } from '../types/parking'
+import { submitDenuncia } from '../api/denuncias'
 
-/**
- * Denuncias page for reporting misuse of accessible parking spots
- */
 function DenunciasPage() {
+  const [showForm, setShowForm] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (data: ReportFormData) => {
+    setIsSubmitting(true)
+    try {
+      const result = await submitDenuncia(data)
+      console.log('Denúncia criada com sucesso:', result)
+
+      // Mostrar mensagem de sucesso
+      setSubmitSuccess(true)
+      setShowForm(false)
+
+      // Resetar sucesso após 5 segundos
+      setTimeout(() => {
+        setSubmitSuccess(false)
+      }, 5000)
+    } catch (error) {
+      console.error('Erro ao enviar denúncia:', error)
+      alert('Erro ao enviar denúncia. Por favor, tente novamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="sobre">
       <div className="sobre-container">
@@ -14,6 +41,78 @@ function DenunciasPage() {
             Ajude a combater o uso irregular de vagas inclusivas
           </p>
         </div>
+
+        {submitSuccess && (
+          <div style={{
+            padding: '1rem',
+            marginBottom: '2rem',
+            backgroundColor: '#d1fae5',
+            border: '2px solid #10b981',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            color: '#065f46'
+          }}>
+            <CheckCircle size={24} />
+            <span style={{ fontWeight: 500 }}>Denúncia enviada com sucesso! Obrigado por contribuir.</span>
+          </div>
+        )}
+
+        {!showForm && (
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <button
+              onClick={() => setShowForm(true)}
+              style={{
+                padding: '1rem 2rem',
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
+            >
+              Fazer uma Denúncia
+            </button>
+          </div>
+        )}
+
+        {showForm && (
+          <div style={{ marginBottom: '3rem' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1rem'
+            }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#1a202c' }}>
+                Formulário de Denúncia
+              </h2>
+              <button
+                onClick={() => setShowForm(false)}
+                disabled={isSubmitting}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#e2e8f0',
+                  color: '#475569',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  fontWeight: 500,
+                  opacity: isSubmitting ? 0.6 : 1
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+            <ReportForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          </div>
+        )}
 
         <div className="sobre-content">
           <section className="sobre-section">
@@ -53,7 +152,7 @@ function DenunciasPage() {
                 <FileText size={32} className="feature-icon" />
                 <h3 className="feature-title">3. Registre a Ocorrência</h3>
                 <p className="feature-text">
-                  Entre em contato com os órgãos de fiscalização da sua cidade através
+                  Preencha as informações no formulário acima ou entre em contato com os órgãos de fiscalização da sua cidade através
                   dos canais oficiais.
                 </p>
               </div>
@@ -65,10 +164,10 @@ function DenunciasPage() {
             <div className="steps">
               <div className="step" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                 <div className="step-content">
-                  <h3 className="step-title">Disque Denúncia (Nacional)</h3>
+                  <h3 className="step-title">Central de atendimento.</h3>
                   <p className="step-text">
-                    <strong>Telefone:</strong> 181<br />
-                    Disponível em vários estados brasileiros, gratuitamente.
+                    <strong>Telefone:</strong> 153<br />
+                    Disponível gratuitamente. Ligue e denuncie!
                   </p>
                 </div>
               </div>
@@ -77,8 +176,9 @@ function DenunciasPage() {
                 <div className="step-content">
                   <h3 className="step-title">Ouvidoria Municipal</h3>
                   <p className="step-text">
-                    Entre em contato com a ouvidoria ou secretaria de trânsito da sua cidade.
-                    Muitos municípios têm aplicativos ou sites específicos para esse tipo de denúncia.
+                    <strong>Telefone:</strong> (21) 98099-0692<br />
+                    Entre em contato com a NITTRANS.<br />
+                    
                   </p>
                 </div>
               </div>

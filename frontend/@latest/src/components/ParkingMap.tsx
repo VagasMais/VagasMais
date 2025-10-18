@@ -3,6 +3,29 @@ import { loadGoogleMaps } from '../utils/googleMaps'
 import type { ParkingSpot, Coordinates } from '../types/parking'
 import { DEFAULT_ZOOM, ERROR_MESSAGES } from '../constants/defaults'
 
+/**
+ * Cor do waypoint no mapa
+ */
+const getMarkerColor = (spot: ParkingSpot): string => {
+  if (spot.parking_disabled) return '#f97316' // Orange for PCD
+  if (spot.parking_pregnant) return '#3b82f6' // Blue for pregnant
+  if (spot.parking_elderly) return '#f87171' // Light red for elderly
+  return '#10b981' // Green
+}
+
+/**
+ * Descricao do waypoint no mapa
+ */
+const getMarkerTitle = (spot: ParkingSpot): string => {
+  const types: string[] = []
+  if (spot.parking_disabled) types.push('PCD')
+  if (spot.parking_pregnant) types.push('Gestante')
+  if (spot.parking_elderly) types.push('Idoso')
+
+  const typeText = types.length > 0 ? ` (${types.join(', ')})` : ''
+  return `${spot.name}${typeText}`
+}
+
 interface ParkingMapProps {
   spots: ParkingSpot[]
   userLocation: Coordinates | null
@@ -35,15 +58,20 @@ const ParkingMap = ({
     if (!mapRef.current || spots.length === 0) return
 
     const initMap = () => {
-      if (typeof ((globalThis as unknown as { google?: unknown }).google) === 'undefined') {
+      // More thorough check for Google Maps API
+      if (typeof window.google === 'undefined' ||
+          typeof window.google.maps === 'undefined' ||
+          typeof window.google.maps.Map === 'undefined') {
+        console.error('Google Maps API not fully loaded')
         setError(ERROR_MESSAGES.MAPS_NOT_LOADED)
         return
       }
 
-      type GoogleNamespace = typeof globalThis.google
-      const google = (globalThis as unknown as { google?: GoogleNamespace }).google!
+      // Clear any previous errors since we're successfully initializing
+      setError('')
+
       const center = userLocation || { lat: spots[0].latitude, lng: spots[0].longitude }
-      const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
+      const map = new window.google.maps.Map(mapRef.current as HTMLDivElement, {
         center,
         zoom: DEFAULT_ZOOM,
         styles: [
@@ -62,11 +90,11 @@ const ParkingMap = ({
 
       // Add user location marker
       if (userLocation) {
-        new google.maps.Marker({
+        new window.google.maps.Marker({
           position: userLocation,
           map,
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
+            path: window.google.maps.SymbolPath.CIRCLE,
             scale: 8,
             fillColor: '#4285F4',
             fillOpacity: 1,
@@ -84,18 +112,21 @@ const ParkingMap = ({
       // Add parking spot markers
       spots.forEach(spot => {
         const isNearby = nearbySpotIds.includes(spot._id)
-        const marker = new google.maps.Marker({
+        const markerColor = getMarkerColor(spot)
+        const markerTitle = getMarkerTitle(spot)
+
+        const marker = new window.google.maps.Marker({
           position: { lat: spot.latitude, lng: spot.longitude },
           map,
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
+            path: window.google.maps.SymbolPath.CIRCLE,
             scale: isNearby ? 12 : 10, // Nearby spots are larger
-            fillColor: spot.availableSpots > 0 ? '#10b981' : '#ef4444',
+            fillColor: markerColor, // Color based on spot type (PCD, Pregnant, Elderly)
             fillOpacity: isNearby ? 1 : 0.7, // Nearby spots more visible
             strokeColor: isNearby ? '#facc15' : '#ffffff', // Yellow border for nearby spots
             strokeWeight: isNearby ? 3 : 2
           },
-          title: spot.name,
+          title: markerTitle, // Includes spot type in title
           zIndex: isNearby ? 1000 : 1 // Nearby spots appear on top
         })
 
@@ -109,13 +140,20 @@ const ParkingMap = ({
       })
     }
 
-    if ('google' in window) {
-      initMap()
-    } else {
-      loadGoogleMaps()
-        .then(() => initMap())
-        .catch(() => setError('Erro ao carregar o mapa. Verifique a chave da API.'))
-    }
+    // Always use loadGoogleMaps to ensure API is fully ready
+    console.log('Ensuring Google Maps API is loaded...')
+    loadGoogleMaps()
+      .then(() => {
+        console.log('Google Maps loaded successfully, initializing map...')
+        // Add small delay to ensure all Google Maps objects are ready
+        setTimeout(() => {
+          initMap()
+        }, 100)
+      })
+      .catch((error) => {
+        console.error('Error loading Google Maps:', error)
+        setError('Erro ao carregar o mapa. Verifique a chave da API.')
+      })
   }, [spots, userLocation, setError, setSelectedSpot, onSelectSpot, googleMapRef, nearbySpotIds])
 
   return (

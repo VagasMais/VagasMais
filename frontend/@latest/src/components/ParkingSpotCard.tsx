@@ -11,10 +11,6 @@ interface ParkingSpotCardProps {
   userLocation?: Coordinates | null
 }
 
-/**
- * Card component displaying parking spot information
- * Shows availability, distance, and navigation options
- */
 const ParkingSpotCard = ({
   spot,
   isSelected,
@@ -36,8 +32,40 @@ const ParkingSpotCard = ({
       onClick={onSelect}
     >
       <div className="vaga-header">
-        <MapPin size={20} className="vaga-icon" />
-        <h3 className="vaga-nome">{spot.name}</h3>
+        <div className="vaga-header-left">
+          <MapPin size={20} className="vaga-icon" />
+          <h3 className="vaga-nome">{spot.name}</h3>
+        </div>
+
+        {/* Ícones indicando o público-alvo da vaga */}
+        {(spot.parking_disabled || spot.parking_pregnant || spot.parking_elderly) && (
+          <div className="vaga-target-audience">
+            {spot.parking_disabled && (
+              <img
+                src="/pcd.png"
+                alt="Vaga para pessoa com deficiência"
+                title="Vaga para pessoa com deficiência"
+                className="audience-icon"
+              />
+            )}
+            {spot.parking_pregnant && (
+              <img
+                src="/gestante.png"
+                alt="Vaga para gestante"
+                title="Vaga para gestante"
+                className="audience-icon"
+              />
+            )}
+            {spot.parking_elderly && (
+              <img
+                src="/idoso.png"
+                alt="Vaga para idoso"
+                title="Vaga para idoso"
+                className="audience-icon"
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <p className="vaga-endereco">{spot.address}</p>
@@ -55,10 +83,6 @@ const ParkingSpotCard = ({
       <div className="vaga-info">
         <span className={`vaga-status ${isAvailable ? 'disponivel' : 'ocupado'}`}>
           {isAvailable ? 'Disponível' : 'Ocupado'}
-        </span>
-
-        <span className={`vaga-acessivel ${spot.acessible ? 'acessivel' : 'nao-acessivel'}`}>
-          {spot.acessible ? 'PÚBLICA' : 'PRIVADA'}
         </span>
 
         <span className="vaga-count">

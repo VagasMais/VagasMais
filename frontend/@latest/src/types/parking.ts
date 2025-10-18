@@ -11,7 +11,9 @@ export interface ParkingSpot {
   longitude: number
   totalSpots: number
   availableSpots: number
-  acessible: boolean
+  parking_pregnant: boolean
+  parking_elderly: boolean
+  parking_disabled: boolean
 }
 
 export interface Coordinates {
@@ -25,3 +27,17 @@ export interface RouteInfo {
 }
 
 export type PageType = 'home' | 'map' | 'about' | 'denuncias'
+
+export type SpotType = 'pregnant' | 'elderly' | 'disabled'
+
+export type ViolationType = 'no_credential' | 'blocking_access' | 'misuse' | 'other'
+
+export interface ReportFormData {
+  address: string
+  latitude: number | null
+  longitude: number | null
+  spotType: SpotType
+  violationType: ViolationType
+  description: string
+  media: File[]
+}

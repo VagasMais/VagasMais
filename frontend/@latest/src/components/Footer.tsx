@@ -29,8 +29,8 @@ function Footer() {
             <ul className="footer-links">
               <li><a href="#home" className="footer-link">Início</a></li>
               <li><a href="#map" className="footer-link">Mapa</a></li>
-              <li><a href="#about" className="footer-link">Sobre</a></li>
-              <li><a href="#how-it-works" className="footer-link">Como Funciona</a></li>
+              <li><a href="#about" className="footer-link">Denúncias</a></li>
+              <li><a href="#how-it-works" className="footer-link">Sobre</a></li>
             </ul>
           </div>
 
@@ -52,7 +52,7 @@ function Footer() {
             <h4 className="footer-section-title">Redes Sociais</h4>
             <div className="footer-social">
               <a
-                href="https://wa.me/5511999999999"
+                href="https://wa.me/5521999999999"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
@@ -61,7 +61,7 @@ function Footer() {
                 <MessageCircle size={20} />
               </a>
               <a
-                href="https://instagram.com/vagasmais"
+                href="https://instagram.com/vagas_mais"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"

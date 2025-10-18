@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import vagas
+from routes import vagas, denuncias
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Vagas Acessíveis API")
@@ -14,6 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(vagas.router)
+app.include_router(denuncias.router)
 
 @app.get("/")
 def raiz():

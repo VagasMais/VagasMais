@@ -352,8 +352,17 @@
 .vaga-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.vaga-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .vaga-icon {
@@ -364,6 +373,9 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vaga-endereco {
@@ -414,24 +426,6 @@
 .vaga-status.ocupado {
   background: #fee2e2;
   color: #991b1b;
-}
-
-.vaga-acessivel {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.vaga-acessivel.acessivel {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.vaga-acessivel.nao-acessivel {
-  background: #f3f4f6;
-  color: #6b7280;
 }
 
 .vaga-count {
@@ -1154,5 +1148,210 @@
   }
   50% {
     opacity: 0.7;
+  }
+}
+
+/* Target Audience Icons */
+.vaga-target-audience {
+  display: flex;
+  gap: 0.375rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.audience-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.audience-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Navigation Modal */
+.navigation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  padding: 1rem;
+}
+
+.navigation-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: modalSlideUp 0.3s ease;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.navigation-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.navigation-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+  transform: rotate(90deg);
+}
+
+.navigation-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.navigation-modal-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.navigation-modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.navigation-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.navigation-option:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.navigation-option:active {
+  transform: translateY(0);
+}
+
+.navigation-option-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.navigation-option-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.waze-icon {
+  background: #e0f2fe;
+}
+
+.navigation-option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.navigation-option-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  display: block;
+}
+
+.navigation-option-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: block;
+}
+
+/* Google Maps option specific styling */
+.navigation-option.google-maps:hover {
+  border-color: #4285F4;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
+}
+
+/* Waze option specific styling */
+.navigation-option.waze:hover {
+  border-color: #00D8FF;
+  box-shadow: 0 4px 12px rgba(0, 216, 255, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .navigation-modal {
+    padding: 1.5rem;
+  }
+
+  .navigation-modal-title {
+    font-size: 1.25rem;
+  }
+
+  .navigation-option {
+    padding: 0.875rem 1rem;
+  }
+
+  .navigation-option-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .navigation-option-icon svg {
+    width: 24px;
+    height: 24px;
   }
 }

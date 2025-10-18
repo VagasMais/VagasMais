@@ -24,3 +24,10 @@ def buscar_vaga(id: str):
         raise HTTPException(404, "Vaga não encontrada")
     vaga["_id"] = str(vaga["_id"])
     return vaga
+
+@router.delete("/vagas/{id}")
+def deletar_vaga(id: str):
+    result = vagas_collection.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 0:
+        raise HTTPException(404, "Vaga não encontrada")
+    return {"message": "Vaga deletada com sucesso"}
