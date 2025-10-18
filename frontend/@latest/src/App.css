@@ -1297,9 +1297,11 @@
   flex-shrink: 0;
 }
 
-.navigation-option-icon svg {
+.navigation-option-icon svg,
+.navigation-option-icon img {
   width: 28px;
   height: 28px;
+  object-fit: contain;
 }
 
 .waze-icon {
@@ -1357,7 +1359,8 @@
     height: 40px;
   }
 
-  .navigation-option-icon svg {
+  .navigation-option-icon svg,
+  .navigation-option-icon img {
     width: 24px;
     height: 24px;
   }
