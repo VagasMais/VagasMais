@@ -18,7 +18,7 @@ function HomePage({ onNavigateToMap }: HomePageProps) {
             playsInline
             className="background-video"
           >
-            <source src="/background2.mp4" type="video/mp4" />
+            <source src="/mapPage/background.mp4" type="video/mp4" />
             {/* Fallback para navegadores que não suportam o vídeo */}
           </video>
           <div className="video-overlay"></div>

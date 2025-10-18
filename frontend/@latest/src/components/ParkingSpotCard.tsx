@@ -46,7 +46,7 @@ const ParkingSpotCard = ({
           <div className="vaga-target-audience">
             {spot.parking_disabled && (
               <img
-                src="/pcd.png"
+                src="/spotCard/pcd.png"
                 alt="Vaga para pessoa com deficiência"
                 title="Vaga para pessoa com deficiência"
                 className="audience-icon"
@@ -54,7 +54,7 @@ const ParkingSpotCard = ({
             )}
             {spot.parking_pregnant && (
               <img
-                src="/gestante.png"
+                src="/spotCard/gestante.png"
                 alt="Vaga para gestante"
                 title="Vaga para gestante"
                 className="audience-icon"
@@ -62,7 +62,7 @@ const ParkingSpotCard = ({
             )}
             {spot.parking_elderly && (
               <img
-                src="/idoso.png"
+                src="/spotCard/idoso.png"
                 alt="Vaga para idoso"
                 title="Vaga para idoso"
                 className="audience-icon"
@@ -121,7 +121,7 @@ const ParkingSpotCard = ({
           aria-label="Ver Street View"
           title="Ver foto do local"
         >
-          <img src="/public/câmera.png" alt="Câmera" className="camera-icon" />
+          <img src="/spotCard/camera.png" alt="Câmera" className="camera-icon" />
         </button>
       </div>
 
