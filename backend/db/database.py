@@ -14,6 +14,7 @@ try:
 	client = MongoClient(MONGO_URI, tls=True, tlsCAFile=certifi.where())
 	db = client["VagasPlus"]
 	vagas_collection = db["vagas"]
+	denuncias_collection = db["denuncias"]
 
 	# Testa conexão com um ping; útil para detectar problemas no startup
 	try:

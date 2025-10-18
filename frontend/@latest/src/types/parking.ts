@@ -27,3 +27,17 @@ export interface RouteInfo {
 }
 
 export type PageType = 'home' | 'map' | 'about' | 'denuncias'
+
+export type SpotType = 'pregnant' | 'elderly' | 'disabled'
+
+export type ViolationType = 'no_credential' | 'blocking_access' | 'misuse' | 'other'
+
+export interface ReportFormData {
+  address: string
+  latitude: number | null
+  longitude: number | null
+  spotType: SpotType
+  violationType: ViolationType
+  description: string
+  media: File[]
+}

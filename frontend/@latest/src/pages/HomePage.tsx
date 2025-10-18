@@ -5,10 +5,6 @@ interface HomePageProps {
   onNavigateToMap: () => void
 }
 
-/**
- * Home page component
- * Landing page with app introduction and features
- */
 function HomePage({ onNavigateToMap }: HomePageProps) {
   return (
     <div className="home-page-new">
