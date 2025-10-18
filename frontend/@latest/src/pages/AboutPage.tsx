@@ -12,7 +12,7 @@ function AboutPage() {
           <MapPin size={64} className="sobre-logo" />
           <h1 className="sobre-title">Vagas+</h1>
           <p className="sobre-subtitle">
-            Facilitando o acesso a vagas especiais na sua cidade
+            Facilitando o acesso a vagas inclusivas na sua cidade
           </p>
         </div>
 

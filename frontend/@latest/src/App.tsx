@@ -90,7 +90,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onNavigate={setCurrentPage} />
 
       {/* Mobile menu overlay */}
       {menuOpen && (

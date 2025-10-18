@@ -1,10 +1,11 @@
 import { MapPin, Mail, Instagram, Facebook, MessageCircle } from 'lucide-react'
+import type { PageType } from '../types/parking'
 
-/**
- * Footer component
- * App footer with links and information
- */
-function Footer() {
+interface FooterProps {
+  onNavigate: (page: PageType) => void
+}
+
+function Footer({ onNavigate }: FooterProps) {
   const currentYear = new Date().getFullYear()
 
   return (
@@ -27,10 +28,26 @@ function Footer() {
           <div className="footer-section">
             <h4 className="footer-section-title">Links Rápidos</h4>
             <ul className="footer-links">
-              <li><a href="#home" className="footer-link">Início</a></li>
-              <li><a href="#map" className="footer-link">Mapa</a></li>
-              <li><a href="#about" className="footer-link">Denúncias</a></li>
-              <li><a href="#how-it-works" className="footer-link">Sobre</a></li>
+              <li>
+                <button onClick={() => onNavigate('home')} className="footer-link">
+                  Início
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('map')} className="footer-link">
+                  Mapa
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('denuncias')} className="footer-link">
+                  Denúncias
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('about')} className="footer-link">
+                  Sobre
+                </button>
+              </li>
             </ul>
           </div>
 
