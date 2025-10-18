@@ -240,19 +240,6 @@ O sistema utiliza dois raios diferentes para otimizar a experiência:
 - Labels ARIA
 - Foco em usabilidade para pessoas com necessidades especiais
 
-## 🤝 Como Contribuir
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-### Convenções de Código
-- Código em **inglês** (variáveis, funções, comentários)
-- Interface do usuário em **português brasileiro**
-- Documentação em **português brasileiro**
-
 ## 📝 Scripts Disponíveis
 
 ### Frontend
@@ -267,25 +254,6 @@ npm run lint      # Executa ESLint
 ```bash
 uvicorn main:app --reload  # Inicia servidor com reload automático
 ```
-
-## 🐛 Problemas Conhecidos
-
-Se encontrar problemas, verifique:
-- As variáveis de ambiente estão configuradas corretamente
-- O backend está rodando antes de iniciar o frontend
-- A chave da API do Google Maps tem as APIs necessárias habilitadas:
-  - Maps JavaScript API
-  - Places API
-  - Geocoding API
-  - Directions API
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais e de inclusão social.
-
-## 📞 Contato
-
-Para sugestões, dúvidas ou contribuições, abra uma issue ou envie um pull request.
 
 ---
 
