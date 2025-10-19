@@ -75,7 +75,7 @@ function AboutPage() {
             <h2 className="section-title">Como Usar</h2>
             <div className="steps">
               <div className="step" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                <div className="step-number" style={{ minWidth: 36, height: 36, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
+                <div className="step-number" style={{ width: 36, height: 36, flexShrink: 0, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
                   1
                 </div>
                 <div className="step-content">
@@ -86,7 +86,7 @@ function AboutPage() {
                 </div>
               </div>
               <div className="step" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                <div className="step-number" style={{ minWidth: 36, height: 36, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
+                <div className="step-number" style={{ width: 36, height: 36, flexShrink: 0, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
                   2
                 </div>
                 <div className="step-content">
@@ -98,7 +98,7 @@ function AboutPage() {
                 </div>
               </div>
               <div className="step" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                <div className="step-number" style={{ minWidth: 36, height: 36, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
+                <div className="step-number" style={{ width: 36, height: 36, flexShrink: 0, borderRadius: '50%', background: '#007bff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 18, marginRight: 16 }}>
                   3
                 </div>
                 <div className="step-content">
