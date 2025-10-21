@@ -177,12 +177,12 @@ function DenunciasPage() {
                   <h3 className="step-title">Ouvidoria Municipal</h3>
                   <p className="step-text">
                     <strong>Telefone:</strong> (21) 98099-0692<br />
-                    Entre em contato com a NITTRANS.<br />
-                    
+                    <strong>Email:</strong>{' '}
+                      <a href="mailto:nittrans@niteroi.rj.gov.br">nittrans@niteroi.rj.gov.br</a><br />
+                        Entre em contato com a NITTRANS.<br />
                   </p>
                 </div>
               </div>
-
               <div className="step" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
                 <div className="step-content">
                   <h3 className="step-title">Órgãos de Trânsito</h3>
