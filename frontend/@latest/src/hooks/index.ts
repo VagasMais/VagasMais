@@ -1,4 +1,6 @@
 export { useLocation } from './useLocation'
 export { useGeocode } from './useGeocode'
 export { useParkingSpots } from './useParkingSpots'
+export { useParkingSpotsWithReports } from './useParkingSpotsWithReports'
+export { useStatusReport } from './useStatusReport'
 export { useRoute } from './useRoute'

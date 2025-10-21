@@ -1,13 +1,15 @@
 import ParkingSpotCard from './ParkingSpotCard'
 import type { ParkingSpot, Coordinates } from '../types/parking'
+import type { ParkingSpotWithReport } from '../hooks/useParkingSpotsWithReports'
 
 interface ParkingSpotsListProps {
-  spots: ParkingSpot[]
+  spots: ParkingSpotWithReport[]
   selectedSpot: ParkingSpot | null
   onSelect: (spot: ParkingSpot) => void
   onViewRoute?: (spot: ParkingSpot) => void
   onNavigate?: (spot: ParkingSpot) => void
   userLocation: Coordinates | null
+  onReportSuccess?: () => void
 }
 
 /**
@@ -20,7 +22,8 @@ const ParkingSpotsList = ({
   onSelect,
   onViewRoute,
   onNavigate,
-  userLocation
+  userLocation,
+  onReportSuccess
 }: ParkingSpotsListProps) => {
   return (
     <div className="vagas-list">
@@ -37,6 +40,8 @@ const ParkingSpotsList = ({
             onViewRoute={userLocation ? () => onViewRoute?.(spot) : undefined}
             onNavigate={userLocation ? () => onNavigate?.(spot) : undefined}
             userLocation={userLocation}
+            latestReport={spot.latestReport}
+            onReportSuccess={onReportSuccess}
           />
         ))}
       </div>

@@ -15,6 +15,7 @@ try:
 	db = client["VagasPlus"]
 	vagas_collection = db["vagas"]
 	denuncias_collection = db["denuncias"]
+	status_reports_collection = db["status_reports"]
 
 	# Testa conexão com um ping; útil para detectar problemas no startup
 	try:

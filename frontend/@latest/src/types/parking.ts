@@ -41,3 +41,22 @@ export interface ReportFormData {
   description: string
   media: File[]
 }
+
+export interface StatusReport {
+  _id: string
+  vaga_id: string
+  vagas_disponiveis: number
+  total_vagas: number
+  timestamp: string
+  ip_address: string
+  observacoes?: string
+  minutes_ago?: number
+}
+
+export interface StatusReportSubmission {
+  vagas_disponiveis: number
+  total_vagas: number
+  observacoes?: string
+}
+
+export type StatusOption = 'all_occupied' | 'partially_occupied' | 'available'
