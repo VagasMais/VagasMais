@@ -3,6 +3,8 @@ import { useState } from 'react'
 import type { ParkingSpot, Coordinates } from '../types/parking'
 import { useRoute } from '../hooks/useRoute'
 import StreetViewModal from './StreetViewModal'
+import StatusReportModal from './StatusReportModal'
+import ReportButton from './ReportButton'
 
 interface ParkingSpotCardProps {
   spot: ParkingSpot
@@ -11,6 +13,11 @@ interface ParkingSpotCardProps {
   onViewRoute?: () => void
   onNavigate?: () => void
   userLocation?: Coordinates | null
+  latestReport?: {
+    vagas_disponiveis: number
+    minutes_ago: number
+  } | null
+  onReportSuccess?: () => void
 }
 
 const ParkingSpotCard = ({
@@ -19,16 +26,22 @@ const ParkingSpotCard = ({
   onSelect,
   onViewRoute,
   onNavigate,
-  userLocation
+  userLocation,
+  latestReport,
+  onReportSuccess
 }: ParkingSpotCardProps) => {
   const [isStreetViewOpen, setIsStreetViewOpen] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
 
   const { distanceText, durationText, loading, error } = useRoute(
     userLocation ?? null,
     { lat: spot.latitude, lng: spot.longitude }
   )
 
-  const isAvailable = spot.availableSpots > 0
+  // Use report data if available and recent, otherwise use spot data
+  const displayAvailableSpots = latestReport ? latestReport.vagas_disponiveis : spot.availableSpots
+  const isAvailable = displayAvailableSpots > 0
+  const hasRecentReport = latestReport && latestReport.minutes_ago !== undefined
 
   return (
     <div
@@ -90,9 +103,15 @@ const ParkingSpotCard = ({
         </span>
 
         <span className="vaga-count">
-          {spot.availableSpots}/{spot.totalSpots} vagas
+          {displayAvailableSpots}/{spot.totalSpots} vagas
         </span>
       </div>
+
+      {hasRecentReport && (
+        <div className="report-badge">
+          Atualizado há {latestReport.minutes_ago} min
+        </div>
+      )}
 
       <div className="vaga-actions">
         <div className="vaga-actions-left">
@@ -110,6 +129,12 @@ const ParkingSpotCard = ({
               Ver rota
             </button>
           )}
+
+          <ReportButton
+            spot={spot}
+            userLocation={userLocation ?? null}
+            onClick={() => setIsReportModalOpen(true)}
+          />
         </div>
 
         <button
@@ -130,6 +155,15 @@ const ParkingSpotCard = ({
         onClose={() => setIsStreetViewOpen(false)}
         location={{ lat: spot.latitude, lng: spot.longitude }}
         title={spot.name}
+      />
+
+      <StatusReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        spot={spot}
+        onSuccess={() => {
+          onReportSuccess?.()
+        }}
       />
     </div>
   )

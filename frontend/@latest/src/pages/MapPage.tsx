@@ -5,7 +5,7 @@ import ParkingMap from '../components/ParkingMap'
 import AddressSearchBar from '../components/AddressSearchBar'
 import ParkingSpotsList from '../components/ParkingSpotsList'
 import NavigationModal from '../components/NavigationModal'
-import { useParkingSpots } from '../hooks/useParkingSpots'
+import { useParkingSpotsWithReports } from '../hooks/useParkingSpotsWithReports'
 import { useLocation } from '../hooks/useLocation'
 import { useGeocode } from '../hooks/useGeocode'
 import { SEARCH_RADIUS_KM, NEARBY_RADIUS_KM, FOCUSED_ZOOM, ERROR_MESSAGES } from '../constants/defaults'
@@ -15,7 +15,7 @@ import { SEARCH_RADIUS_KM, NEARBY_RADIUS_KM, FOCUSED_ZOOM, ERROR_MESSAGES } from
  * Displays map, search, and parking spots list
  */
 function MapPage() {
-  const { spots, loading, error: spotsError } = useParkingSpots()
+  const { spots, loading, error: spotsError, refetch } = useParkingSpotsWithReports()
   const { location: userLocation, error: locationError } = useLocation()
   const { calculateDistance } = useGeocode()
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null)
@@ -221,6 +221,7 @@ function MapPage() {
         onViewRoute={userLocation ? drawRoute : undefined}
         onNavigate={userLocation ? handleNavigate : undefined}
         userLocation={userLocation}
+        onReportSuccess={refetch}
       />
 
       {/* Navigation modal */}
